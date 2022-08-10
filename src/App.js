@@ -1,8 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
+import { useEffect }  from 'react';
 
-function App() {
+const App = () => {
+
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
+    .then((response) => response.json())
+    .then((data) => console.log(data)).catch((err) => {console.log(err.message)})
+  })  
+
   return (
     <div className="App">
       <header className="App-header">
@@ -36,6 +45,7 @@ class NameForm extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
 
   handleChange(event) {
     this.setState({ value: event.target.value })
