@@ -1,72 +1,66 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import { useEffect, useState } from 'react';
 
 const App = () => {
 
-  //https://syncwith.com/yahoo-finance/yahoo-finance-api
-  // https://stackoverflow.com/a/64641435
+  const stocks = ["IWDA.AS", "AAPL", "TSLA", "GOOG"]
 
   return (
     <div className="App">
-      <Stocks ticker="IWDA"/>
+      <h1>Welcome to the stocks app</h1>
+      <StockList tickers={stocks} />
     </div>
   );
 }
 
 export default App;
 
-const Stocks = (props) => {
-
-    const [stockData, setStockData] = useState(null)
-
-    useEffect(() => {
-      fetch('/finance/quote?symbols=IWDA.AS')
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data)
-          setStockData(data)
-        }).catch((err) => { console.log(err.message) })
-    })
-
-    return (<div>
-      <h1>Welcome to the stocks app</h1>
-      <ul>
-        <li>Stock {props.ticker} { stockData ? stockData.quoteResponse.result[0].regularMarketPrice : ""}</li>
-      </ul>
-    </div>
-    )
+class StockData {
+  constructor(name, ticker, price) {
+    this.name = name
+    this.ticker = ticker
+    this.price = price
+  }
 }
 
+const StockList = (props) => {
 
-class NameForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { value: '' };
+  let stockElements = []
+  props.tickers.forEach(ticker => {
+    stockElements.push(<Stock key={ticker} ticker={ticker} />)
+  })
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+  return (
+    <ul className='StockList'>
+      {stockElements}
+    </ul>
+  )
+}
+
+const Stock = (props) => {
+
+  const [stockData, setStockData] = useState(null)
+
+  useEffect(() => {
+    //https://syncwith.com/yahoo-finance/yahoo-finance-api
+    // https://stackoverflow.com/a/64641435
+    fetch('/finance/quote?symbols=' + props.ticker)
+      .then((response) => response.json())
+      .then((data) => {
+        setStockData(toStockData(data))
+      }).catch((err) => { console.log(err.message) })
+  })
+
+  if (stockData == null) {
+    return <li>Loading ticker {props.ticker} </li>
+  } else {
+    return <li className="Stock">{stockData.name} ({stockData.ticker}) - {stockData.price}</li>
   }
+}
 
-
-  handleChange(event) {
-    this.setState({ value: event.target.value })
-  }
-
-  handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
-    event.preventDefault();
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <label>Name: <input type="text" value={this.state.value} onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-    )
-  }
-
+function toStockData(quoteData) {
+  let result = quoteData.quoteResponse.result[0];
+  let stockData = new StockData(result.longName, result.symbol, result.regularMarketPrice);
+  return stockData;
 }

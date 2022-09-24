@@ -32,7 +32,25 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.StockList {
+  padding-inline-start: 0px;
+  display: inline-block;
+}
+
+.Stock {
+  text-align: left;
+  color: #403233;
+  width: 800px;
+  background-color: #F19A3E;
+  padding: 10px;
+  margin: 5px;
+  list-style-type: none;
+  border-radius: 10px;
+  font-weight: bold;
 }
