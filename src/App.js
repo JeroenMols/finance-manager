@@ -1,16 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import { useEffect }  from 'react';
+import { useEffect } from 'react';
 
 const App = () => {
 
-
+  //https://syncwith.com/yahoo-finance/yahoo-finance-api
+  // https://stackoverflow.com/a/64641435
   useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
-    .then((response) => response.json())
-    .then((data) => console.log(data)).catch((err) => {console.log(err.message)})
-  })  
+    fetch('/finance/quote?symbols=IWDA.AS')
+      .then((response) => response.json())
+      .then((data) => console.log(data)).catch((err) => { console.log(err.message) })
+  })
 
   return (
     <div className="App">
