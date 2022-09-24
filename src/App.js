@@ -1,41 +1,43 @@
 import logo from './logo.svg';
 import './App.css';
 import React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const App = () => {
 
   //https://syncwith.com/yahoo-finance/yahoo-finance-api
   // https://stackoverflow.com/a/64641435
-  useEffect(() => {
-    fetch('/finance/quote?symbols=IWDA.AS')
-      .then((response) => response.json())
-      .then((data) => console.log(data)).catch((err) => { console.log(err.message) })
-  })
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <NameForm />
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Stocks ticker="IWDA"/>
     </div>
   );
 }
 
 export default App;
 
+const Stocks = (props) => {
+
+    const [stockData, setStockData] = useState(null)
+
+    useEffect(() => {
+      fetch('/finance/quote?symbols=IWDA.AS')
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          setStockData(data)
+        }).catch((err) => { console.log(err.message) })
+    })
+
+    return (<div>
+      <h1>Welcome to the stocks app</h1>
+      <ul>
+        <li>Stock {props.ticker} { stockData ? stockData.quoteResponse.result[0].regularMarketPrice : ""}</li>
+      </ul>
+    </div>
+    )
+}
 
 
 class NameForm extends React.Component {
