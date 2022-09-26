@@ -5,39 +5,55 @@ import { useEffect, useState } from 'react';
 const App = () => {
 
   const [ticker, setTicker] = useState("");
+  const [shares, setShares] = useState("");
   const [toImport, setToImport] = useState("");
-  const [stocks, setStocks] = useState(["IWDA.AS", "AAPL", "TSLA"]);
+  const [stocks, setStocks] = useState([
+    { ticker: "IWDA.AS", shares: 1 },
+    { ticker: "AAPL", shares: 5 },
+    { ticker: "TSLA", shares: 10 }]);
 
-  const addTicker = (event) => {
+  const addHolding = (event) => {
     event.preventDefault();
-    setStocks([...stocks, ticker]);
+    setStocks([...stocks, { ticker: ticker, shares: shares }]);
     setTicker("");
-  }
-
-  const exportStocks = () => {
-    let csv = stocks.reduce((a, b) => (a + "," + b));
-    alert(csv);
+    setShares("");
   }
 
   const importStocks = (event) => {
     event.preventDefault();
-    setStocks(toImport.split(','));
+    let allValues = toImport.split(',')
+    let stocks = [];
+    for (let i = 0; i < allValues.length; i = i + 2) {
+      stocks.push({ ticker: allValues[i].trim(), shares: parseInt(allValues[i + 1]) });
+    }
+    setStocks(stocks);
     setToImport("");
+  }
+
+  const exportStocks = () => {
+    let csv = stocks.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b));
+    alert(csv);
   }
 
   return (
     <div className="App">
       <h1>Welcome to the stocks app</h1>
-      <form onSubmit={addTicker}>
-        <label>Add stock ticker:
+      <form onSubmit={addHolding}>
+        <label>Add holding:
           <input
             type="text"
+            placeholder='Ticker'
             value={ticker}
             onChange={e => { setTicker(e.target.value) }} />
+          <input
+            type="number"
+            placeholder='Amount of shares'
+            value={shares}
+            onChange={e => { setShares(e.target.value) }} />
         </label>
         <input type="submit" value="Add" />
       </form>
-      <StockList tickers={stocks} />
+      <StockList stocks={stocks} />
       <br />
       <form onSubmit={importStocks}>
         <input
@@ -45,8 +61,8 @@ const App = () => {
           value={toImport}
           onChange={e => { setToImport(e.target.value) }} />
         <input type="submit" value="Import Stocks" />
-        <button onClick={exportStocks}>Export stocks</button>
       </form>
+      <button onClick={exportStocks}>Export stocks</button>
     </div>
   );
 }
@@ -54,18 +70,23 @@ const App = () => {
 export default App;
 
 class StockData {
-  constructor(name, ticker, price) {
+  constructor(name, ticker, price, shares) {
     this.name = name
     this.ticker = ticker
     this.price = price
+    this.shares = shares
+  }
+
+  totalValue() {
+    return (this.shares * this.price).toFixed(2)
   }
 }
 
 const StockList = (props) => {
 
   let stockElements = []
-  props.tickers.forEach(ticker => {
-    stockElements.push(<Stock key={ticker} ticker={ticker} />)
+  props.stocks.forEach(stock => {
+    stockElements.push(<Stock key={stock.ticker} ticker={stock.ticker} shares={stock.shares} />)
   })
 
   return (
@@ -82,22 +103,28 @@ const Stock = (props) => {
   useEffect(() => {
     //https://syncwith.com/yahoo-finance/yahoo-finance-api
     // https://stackoverflow.com/a/64641435
+    console.log("loading " + props.ticker)
     fetch('/finance/quote?symbols=' + props.ticker)
       .then((response) => response.json())
       .then((data) => {
-        setStockData(toStockData(data))
+        setStockData(toStockData(data, props.shares))
       }).catch((err) => { console.log(err.message) })
   }, [props])
 
   if (stockData == null) {
     return <li>Loading ticker {props.ticker} </li>
   } else {
-    return <li className="Stock">{stockData.name} ({stockData.ticker}) - {stockData.price}</li>
+    return <li className="Stock">
+      <div>{stockData.name}</div>
+      <div>({stockData.ticker})</div>
+      <div className="Price">{stockData.price}</div>
+      <div className="Price">{stockData.totalValue()}</div>
+    </li>
   }
 }
 
-function toStockData(quoteData) {
+function toStockData(quoteData, shares) {
   let result = quoteData.quoteResponse.result[0];
-  let stockData = new StockData(result.longName, result.symbol, result.regularMarketPrice);
+  let stockData = new StockData(result.longName, result.symbol, result.regularMarketPrice, shares);
   return stockData;
 }

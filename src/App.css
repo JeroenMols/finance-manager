@@ -53,4 +53,10 @@
   list-style-type: none;
   border-radius: 10px;
   font-weight: bold;
+  display:grid;
+  grid-template-columns: 55% 15% 15% 15%;
+}
+
+.Price {
+  text-align: right;
 }
