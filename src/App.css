@@ -54,9 +54,9 @@
   border-radius: 10px;
   font-weight: bold;
   display:grid;
-  grid-template-columns: 55% 15% 15% 15%;
+  grid-template-columns: 60% 10% 10% 8% 12%;
 }
 
-.Price {
+.Value {
   text-align: right;
 }

@@ -101,7 +101,7 @@ const Stock = (props) => {
   const [stockData, setStockData] = useState(null)
 
   useEffect(() => {
-    //https://syncwith.com/yahoo-finance/yahoo-finance-api
+    // https://syncwith.com/yahoo-finance/yahoo-finance-api
     // https://stackoverflow.com/a/64641435
     console.log("loading " + props.ticker)
     fetch('/finance/quote?symbols=' + props.ticker)
@@ -116,9 +116,10 @@ const Stock = (props) => {
   } else {
     return <li className="Stock">
       <div>{stockData.name}</div>
-      <div>({stockData.ticker})</div>
-      <div className="Price">{stockData.price}</div>
-      <div className="Price">{stockData.totalValue()}</div>
+      <div>{stockData.ticker}</div>
+      <div className="Value">{stockData.price}</div>
+      <div className="Value">{stockData.shares}</div>
+      <div className="Value">{stockData.totalValue()}</div>
     </li>
   }
 }
