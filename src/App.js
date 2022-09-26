@@ -5,12 +5,24 @@ import { useEffect, useState } from 'react';
 const App = () => {
 
   const [ticker, setTicker] = useState("");
+  const [toImport, setToImport] = useState("");
   const [stocks, setStocks] = useState(["IWDA.AS", "AAPL", "TSLA"]);
 
   const addTicker = (event) => {
     event.preventDefault();
     setStocks([...stocks, ticker]);
-    setTicker("")
+    setTicker("");
+  }
+
+  const exportStocks = () => {
+    let csv = stocks.reduce((a, b) => (a + "," + b));
+    alert(csv);
+  }
+
+  const importStocks = (event) => {
+    event.preventDefault();
+    setStocks(toImport.split(','));
+    setToImport("");
   }
 
   return (
@@ -26,6 +38,15 @@ const App = () => {
         <input type="submit" value="Add" />
       </form>
       <StockList tickers={stocks} />
+      <br />
+      <form onSubmit={importStocks}>
+        <input
+          type="text"
+          value={toImport}
+          onChange={e => { setToImport(e.target.value) }} />
+        <input type="submit" value="Import Stocks" />
+        <button onClick={exportStocks}>Export stocks</button>
+      </form>
     </div>
   );
 }
