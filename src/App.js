@@ -4,11 +4,27 @@ import { useEffect, useState } from 'react';
 
 const App = () => {
 
-  const stocks = ["IWDA.AS", "AAPL", "TSLA", "GOOG"]
+  const [ticker, setTicker] = useState("");
+  const [stocks, setStocks] = useState(["IWDA.AS", "AAPL", "TSLA"]);
+
+  const addTicker = (event) => {
+    event.preventDefault();
+    setStocks([...stocks, ticker]);
+    setTicker("")
+  }
 
   return (
     <div className="App">
       <h1>Welcome to the stocks app</h1>
+      <form onSubmit={addTicker}>
+        <label>Add stock ticker:
+          <input
+            type="text"
+            value={ticker}
+            onChange={e => { setTicker(e.target.value) }} />
+        </label>
+        <input type="submit" value="Add" />
+      </form>
       <StockList tickers={stocks} />
     </div>
   );
