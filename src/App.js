@@ -87,7 +87,7 @@ const Stock = (props) => {
       .then((data) => {
         setStockData(toStockData(data))
       }).catch((err) => { console.log(err.message) })
-  })
+  }, [props])
 
   if (stockData == null) {
     return <li>Loading ticker {props.ticker} </li>
