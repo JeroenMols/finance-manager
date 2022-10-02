@@ -84,42 +84,63 @@ class StockData {
 
 const StockList = (props) => {
 
+  const [stockData, setStockData] = useState([])
+
+  useEffect(() => {
+    let newStocksPromises = []
+    for (let i = 0; i < props.stocks.length; i++) {
+      console.log("loading stock: " + props.stocks[i].ticker)
+      newStocksPromises.push(loadStock(props.stocks[i]))
+    }
+    Promise.all(newStocksPromises).then(values => {
+      console.log(newStocksPromises)
+      setStockData(values)
+    })
+  }, [props])
+
+  const loadStock = async (stock) => {
+    let response = await fetch('/finance/quote?symbols=' + stock.ticker)
+    console.log("loaded stock: " + stock.ticker)
+    return toStockData(await response.json(), stock.shares)
+  }
+
   let stockElements = []
-  props.stocks.forEach(stock => {
-    stockElements.push(<Stock key={stock.ticker} ticker={stock.ticker} shares={stock.shares} />)
+  stockData.forEach(stock => {
+    stockElements.push(<Stock key={stock.ticker} stockData={stock} />)
   })
+
+  let totalPortfolioValue = 0
+  for (let i = 0; i < stockData.length; i++) {
+    console.log("Adding " + stockData[i].ticker + "   " + stockData[i].price)
+    totalPortfolioValue += parseFloat(stockData[i].totalValue())
+  }
+  totalPortfolioValue = totalPortfolioValue.toFixed(2)
 
   return (
     <ul className='StockList'>
       {stockElements}
+      <li className='Stock'>
+        <div>Total portfolio value</div>
+        <div></div>
+        <div className="Value" />
+        <div className="Value" />
+        <div className="Value">{totalPortfolioValue}</div>
+      </li>
     </ul>
   )
 }
 
 const Stock = (props) => {
 
-  const [stockData, setStockData] = useState(null)
-
-  useEffect(() => {
-    // https://syncwith.com/yahoo-finance/yahoo-finance-api
-    // https://stackoverflow.com/a/64641435
-    console.log("loading " + props.ticker)
-    fetch('/finance/quote?symbols=' + props.ticker)
-      .then((response) => response.json())
-      .then((data) => {
-        setStockData(toStockData(data, props.shares))
-      }).catch((err) => { console.log(err.message) })
-  }, [props])
-
-  if (stockData == null) {
+  if (props.stockData.price == 0) {
     return <li>Loading ticker {props.ticker} </li>
   } else {
     return <li className="Stock">
-      <div>{stockData.name}</div>
-      <div>{stockData.ticker}</div>
-      <div className="Value">{stockData.price}</div>
-      <div className="Value">{stockData.shares}</div>
-      <div className="Value">{stockData.totalValue()}</div>
+      <div>{props.stockData.name}</div>
+      <div>{props.stockData.ticker}</div>
+      <div className="Value">{props.stockData.price}</div>
+      <div className="Value">{props.stockData.shares}</div>
+      <div className="Value">{props.stockData.totalValue()}</div>
     </li>
   }
 }
