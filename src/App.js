@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import { useEffect, useState } from 'react';
+import { PieChart } from 'react-minimal-pie-chart';
 
 const App = () => {
 
@@ -78,7 +79,11 @@ class StockData {
   }
 
   totalValue() {
-    return (this.shares * this.price).toFixed(2)
+    return parseFloat((this.shares * this.price).toFixed(2))
+  }
+
+  totalValueInt() {
+    return parseInt(this.totalValue().toFixed(0))
   }
 }
 
@@ -105,19 +110,33 @@ const StockList = (props) => {
   }
 
   let stockElements = []
-  stockData.forEach(stock => {
-    stockElements.push(<Stock key={stock.ticker} stockData={stock} />)
+  stockData.forEach((stock, index) => {
+    stockElements.push(<Stock style={{ backgroundColor: toColor(index) }} key={stock.ticker} stockData={stock} />)
   })
 
   let totalPortfolioValue = 0
   for (let i = 0; i < stockData.length; i++) {
     console.log("Adding " + stockData[i].ticker + "   " + stockData[i].price)
-    totalPortfolioValue += parseFloat(stockData[i].totalValue())
+    totalPortfolioValue += stockData[i].totalValue()
   }
   totalPortfolioValue = totalPortfolioValue.toFixed(2)
 
+  let chart = <div />
+  if (stockData.length > 0) {
+    let chartData = stockData.map((data, index) => { return { title: data.name, value: data.totalValueInt(), color: toColor(index) } })
+    chart = <div className="Chart">
+      <PieChart
+        radius={49}
+        data={chartData}
+        animate={true}
+        segmentsShift={1}
+      />
+    </div>
+  }
+
   return (
-    <ul className='StockList'>
+    <ul className='StockList' >
+      {chart}
       {stockElements}
       <li className='Stock'>
         <div>Total portfolio value</div>
@@ -135,7 +154,7 @@ const Stock = (props) => {
   if (props.stockData.price == 0) {
     return <li>Loading ticker {props.ticker} </li>
   } else {
-    return <li className="Stock">
+    return <li className="Stock" {...props}>
       <div>{props.stockData.name}</div>
       <div>{props.stockData.ticker}</div>
       <div className="Value">{props.stockData.price}</div>
@@ -149,4 +168,22 @@ function toStockData(quoteData, shares) {
   let result = quoteData.quoteResponse.result[0];
   let stockData = new StockData(result.longName, result.symbol, result.regularMarketPrice, shares);
   return stockData;
+}
+
+const colors = ['#C62828',
+  '#AD1457',
+  '#6A1B9A',
+  '#283593',
+  '#1565C0',
+  '#00838F',
+  '#2E7D32',
+  '#9E9D24',
+  '#F9A825',
+  '#EF6C00',
+  '#D84315',
+  '#4E342E',
+  '#37474F']
+
+function toColor(index) {
+  return colors[index % colors.length]
 }

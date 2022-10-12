@@ -45,7 +45,7 @@
 
 .Stock {
   text-align: left;
-  color: #403233;
+  color: #FFF;
   width: 800px;
   background-color: #F19A3E;
   padding: 10px;
@@ -59,4 +59,11 @@
 
 .Value {
   text-align: right;
+}
+
+.Chart {
+  width: 300px;
+  height: 300px;
+  padding: 20px;
+  margin: 0px auto;
 }
