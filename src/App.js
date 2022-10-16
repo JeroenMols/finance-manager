@@ -2,39 +2,52 @@ import './App.css';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
+import { useCookies } from 'react-cookie';
+
+function csvToStocks(csv) {
+  let allValues = csv.split(',')
+  let stocks = [];
+  for (let i = 0; i < allValues.length; i = i + 2) {
+    stocks.push({ ticker: allValues[i].trim(), shares: parseInt(allValues[i + 1]) });
+  }
+  return stocks
+}
+
+function stocksToCsv(stocks) {
+  return stocks.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b))
+}
+
+const defaultStocks = "TSLA, 5, MSFT,10"
 
 const App = () => {
+
+  const [cookies, setCookie] = useCookies(['stocks']);
 
   const [ticker, setTicker] = useState("");
   const [shares, setShares] = useState("");
   const [toImport, setToImport] = useState("");
-  const [stocks, setStocks] = useState([
-    { ticker: "IWDA.AS", shares: 1 },
-    { ticker: "AAPL", shares: 5 },
-    { ticker: "TSLA", shares: 10 }]);
+  const [stocks, setStocks] = useState(csvToStocks(cookies.stocks ? cookies.stocks : defaultStocks));
+
 
   const addHolding = (event) => {
     event.preventDefault();
-    setStocks([...stocks, { ticker: ticker, shares: shares }]);
+    let newStocks = [...stocks, { ticker: ticker, shares: shares }]
+    setStocks(newStocks);
     setTicker("");
     setShares("");
+    setCookie('stocks', stocksToCsv(newStocks))
   }
 
   const importStocks = (event) => {
     event.preventDefault();
-    let allValues = toImport.split(',')
-    let stocks = [];
-    for (let i = 0; i < allValues.length; i = i + 2) {
-      stocks.push({ ticker: allValues[i].trim(), shares: parseInt(allValues[i + 1]) });
-    }
-    setStocks(stocks);
+    let imported = csvToStocks(toImport)
+    setStocks(imported);
+    setCookie('stocks', toImport)
     setToImport("");
   }
 
-  const exportStocks = () => {
-    let csv = stocks.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b));
-    alert(csv);
-  }
+  const exportStocks = () => { alert(stocksToCsv(stocks)); }
+  console.log('Cookie: ' + cookies)
 
   return (
     <div className="App">
@@ -111,7 +124,7 @@ const StockList = (props) => {
 
   let stockElements = []
   stockData.forEach((stock, index) => {
-    stockElements.push(<Stock style={{ backgroundColor: toColor(index) }} key={stock.ticker} stockData={stock} />)
+    stockElements.push(<Stock style={{ backgroundColor: toColor(index) }} key={stock.ticker} stockdata={stock} />)
   })
 
   let totalPortfolioValue = 0
@@ -151,15 +164,15 @@ const StockList = (props) => {
 
 const Stock = (props) => {
 
-  if (props.stockData.price == 0) {
+  if (props.stockdata.price == 0) {
     return <li>Loading ticker {props.ticker} </li>
   } else {
     return <li className="Stock" {...props}>
-      <div>{props.stockData.name}</div>
-      <div>{props.stockData.ticker}</div>
-      <div className="Value">{props.stockData.price}</div>
-      <div className="Value">{props.stockData.shares}</div>
-      <div className="Value">{props.stockData.totalValue()}</div>
+      <div>{props.stockdata.name}</div>
+      <div>{props.stockdata.ticker}</div>
+      <div className="Value">{props.stockdata.price}</div>
+      <div className="Value">{props.stockdata.shares}</div>
+      <div className="Value">{props.stockdata.totalValue()}</div>
     </li>
   }
 }
