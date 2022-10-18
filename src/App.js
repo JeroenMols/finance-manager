@@ -117,7 +117,7 @@ const StockList = (props) => {
   }, [props])
 
   const loadStock = async (stock) => {
-    let response = await fetch('/finance/quote?symbols=' + stock.ticker)
+    let response = await fetch('https://finance-server-jm.herokuapp.com/stocks/' + stock.ticker)
     console.log("loaded stock: " + stock.ticker)
     return toStockData(await response.json(), stock.shares)
   }
