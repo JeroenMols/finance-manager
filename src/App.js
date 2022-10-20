@@ -3,6 +3,9 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import { useCookies } from 'react-cookie';
+import { log } from './log.js'
+
+const base_url = process.env.REACT_APP_SERVER_URL
 
 function csvToStocks(csv) {
   let allValues = csv.split(',')
@@ -47,7 +50,7 @@ const App = () => {
   }
 
   const exportStocks = () => { alert(stocksToCsv(stocks)); }
-  console.log('Cookie: ' + cookies)
+  log('Cookie: ' + cookies)
 
   return (
     <div className="App">
@@ -107,18 +110,18 @@ const StockList = (props) => {
   useEffect(() => {
     let newStocksPromises = []
     for (let i = 0; i < props.stocks.length; i++) {
-      console.log("loading stock: " + props.stocks[i].ticker)
+      log("loading stock: " + props.stocks[i].ticker)
       newStocksPromises.push(loadStock(props.stocks[i]))
     }
     Promise.all(newStocksPromises).then(values => {
-      console.log(newStocksPromises)
+      log(newStocksPromises)
       setStockData(values)
     })
   }, [props])
 
   const loadStock = async (stock) => {
-    let response = await fetch('https://finance-server-jm.herokuapp.com/stocks/' + stock.ticker)
-    console.log("loaded stock: " + stock.ticker)
+    let response = await fetch(base_url + 'stocks/' + stock.ticker)
+    log("loaded stock: " + stock.ticker)
     return toStockData(await response.json(), stock.shares)
   }
 
@@ -129,7 +132,7 @@ const StockList = (props) => {
 
   let totalPortfolioValue = 0
   for (let i = 0; i < stockData.length; i++) {
-    console.log("Adding " + stockData[i].ticker + "   " + stockData[i].price)
+    log("Adding " + stockData[i].ticker + "   " + stockData[i].price)
     totalPortfolioValue += stockData[i].totalValue()
   }
   totalPortfolioValue = totalPortfolioValue.toFixed(2)
