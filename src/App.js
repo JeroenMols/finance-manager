@@ -34,7 +34,7 @@ function stocksToCsv(stocks) {
   return stocks.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b))
 }
 
-const defaultStocks = "TSLA, 5, MSFT,10"
+const defaultStocks = "VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7"
 
 const App = () => {
 
