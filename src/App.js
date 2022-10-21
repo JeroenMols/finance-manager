@@ -7,6 +7,20 @@ import { log } from './log.js'
 
 const base_url = process.env.REACT_APP_SERVER_URL
 
+console.log(`
+
+          __                            
+         / /__  _________  ___  ____    
+    __  / / _ \\/ ___/ __ \\/ _ \\/ __ \\   
+   / /_/ /  __/ /  / /_/ /  __/ / / /  
+   \\____/\\___/_/   \\____/\\___/_/ /_/
+
+Built by Jeroen Mols
+Checkout his portfolio at https://jeroenmols.com
+
+`                           
+)
+
 function csvToStocks(csv) {
   let allValues = csv.split(',')
   let stocks = [];
