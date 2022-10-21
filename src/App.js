@@ -34,6 +34,7 @@ function stocksToCsv(stocks) {
   return stocks.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b))
 }
 
+
 const defaultStocks = "VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7"
 
 const App = () => {
@@ -100,23 +101,6 @@ const App = () => {
 
 export default App;
 
-class StockData {
-  constructor(name, ticker, price, shares) {
-    this.name = name
-    this.ticker = ticker
-    this.price = price
-    this.shares = shares
-  }
-
-  totalValue() {
-    return parseFloat((this.shares * this.price).toFixed(2))
-  }
-
-  totalValueInt() {
-    return parseInt(this.totalValue().toFixed(0))
-  }
-}
-
 const StockList = (props) => {
 
   const [stockData, setStockData] = useState([])
@@ -134,9 +118,9 @@ const StockList = (props) => {
   }, [props])
 
   const loadStock = async (stock) => {
-    let response = await fetch(base_url + 'stocks/' + stock.ticker)
+    let response = await fetch(base_url + 'stocks/' + stock.ticker + "/" + stock.shares)
     log("loaded stock: " + stock.ticker)
-    return toStockData(await response.json(), stock.shares)
+    return await response.json()
   }
 
   let stockElements = []
@@ -147,13 +131,12 @@ const StockList = (props) => {
   let totalPortfolioValue = 0
   for (let i = 0; i < stockData.length; i++) {
     log("Adding " + stockData[i].ticker + "   " + stockData[i].price)
-    totalPortfolioValue += stockData[i].totalValue()
+    totalPortfolioValue += stockData[i].totalValue
   }
-  totalPortfolioValue = totalPortfolioValue.toFixed(2)
 
   let chart = <div />
   if (stockData.length > 0) {
-    let chartData = stockData.map((data, index) => { return { title: data.name, value: data.totalValueInt(), color: toColor(index) } })
+    let chartData = stockData.map((data, index) => { return { title: data.name, value: data.totalValue, color: toColor(index) } })
     chart = <div className="Chart">
       <PieChart
         radius={49}
@@ -173,7 +156,7 @@ const StockList = (props) => {
         <div></div>
         <div className="Value" />
         <div className="Value" />
-        <div className="Value">{totalPortfolioValue}</div>
+        <div className="Value">{totalPortfolioValue.toFixed(2)}</div>
       </li>
     </ul>
   )
@@ -187,17 +170,11 @@ const Stock = (props) => {
     return <li className="Stock" {...props}>
       <div>{props.stockdata.name}</div>
       <div>{props.stockdata.ticker}</div>
-      <div className="Value">{props.stockdata.price}</div>
+      <div className="Value">{props.stockdata.price.toFixed(2)}</div>
       <div className="Value">{props.stockdata.shares}</div>
-      <div className="Value">{props.stockdata.totalValue()}</div>
+      <div className="Value">{props.stockdata.totalValue.toFixed(2)}</div>
     </li>
   }
-}
-
-function toStockData(quoteData, shares) {
-  let result = quoteData.quoteResponse.result[0];
-  let stockData = new StockData(result.longName, result.symbol, result.regularMarketPrice, shares);
-  return stockData;
 }
 
 const colors = ['#C62828',
