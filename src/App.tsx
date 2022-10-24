@@ -21,21 +21,21 @@ Checkout his portfolio at https://jeroenmols.com
 `                           
 )
 
-function csvToStocks(csv: string) : Holding[] {
+function csvToHoldings(csv: string) : Holding[] {
   let allValues = csv.split(',')
-  let stocks : Holding[] = [];
+  let holdings : Holding[] = [];
   for (let i = 0; i < allValues.length; i = i + 2) {
-    stocks.push({ ticker: allValues[i].trim(), shares: parseInt(allValues[i + 1]) });
+    holdings.push({ ticker: allValues[i].trim(), shares: parseInt(allValues[i + 1]) });
   }
-  return stocks
+  return holdings
 }
 
-function stocksToCsv(stocks: Holding[]) {
-  return stocks.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b))
+function holdingsToCsv(holdings: Holding[]) {
+  return holdings.map((a) => a.ticker + "," + a.shares).reduce((a, b) => (a + "," + b))
 }
 
 
-const defaultStocks = "VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7"
+const defaultHoldings = "VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7"
 
 type Holding = {
   ticker: string,
@@ -49,27 +49,27 @@ const App = () => {
   const [ticker, setTicker] = useState("");
   const [shares, setShares] = useState("");
   const [toImport, setToImport] = useState("");
-  const [holdings, setStocks] = useState<Holding[]>(csvToStocks(cookies.stocks ? cookies.stocks : defaultStocks));
+  const [holdings, setHoldings] = useState<Holding[]>(csvToHoldings(cookies.stocks ? cookies.stocks : defaultHoldings));
 
 
   const addHolding = (event: React.FormEvent) => {
     event.preventDefault();
-    let newStocks = [...holdings, { ticker: ticker, shares: parseInt(shares) }]
-    setStocks(newStocks);
+    let newHoldings = [...holdings, { ticker: ticker, shares: parseInt(shares) }]
+    setHoldings(newHoldings);
     setTicker("");
     setShares("");
-    setCookie('stocks', stocksToCsv(newStocks))
+    setCookie('stocks', holdingsToCsv(newHoldings))
   }
 
-  const importStocks = (event: React.FormEvent) => {
+  const importHoldings = (event: React.FormEvent) => {
     event.preventDefault();
-    let imported = csvToStocks(toImport)
-    setStocks(imported);
+    let imported = csvToHoldings(toImport)
+    setHoldings(imported);
     setCookie('stocks', toImport)
     setToImport("");
   }
 
-  const exportStocks = () => { alert(stocksToCsv(holdings)); }
+  const exportHoldings = () => { alert(holdingsToCsv(holdings)); }
   log('Cookie: ' + cookies)
 
   return (
@@ -92,14 +92,14 @@ const App = () => {
       </form>
       <StockList holdings={holdings} />
       <br />
-      <form onSubmit={importStocks}>
+      <form onSubmit={importHoldings}>
         <input
           type="text"
           value={toImport}
           onChange={e => { setToImport(e.target.value) }} />
         <input type="submit" value="Import Stocks" />
       </form>
-      <button onClick={exportStocks}>Export stocks</button>
+      <button onClick={exportHoldings}>Export stocks</button>
     </div>
   );
 }
