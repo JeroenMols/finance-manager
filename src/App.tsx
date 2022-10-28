@@ -33,13 +33,10 @@ function csvToHoldings(csv: string): Holding[] {
 }
 
 function holdingsToCsv(holdings: Holding[]) {
-  return holdings
-    .map((a) => a.ticker + ',' + a.shares)
-    .reduce((a, b) => a + ',' + b);
+  return holdings.map((a) => a.ticker + ',' + a.shares).reduce((a, b) => a + ',' + b);
 }
 
-const defaultHoldings =
-  'VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7';
+const defaultHoldings = 'VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7';
 
 type Holding = {
   ticker: string;
@@ -52,16 +49,11 @@ const App = () => {
   const [ticker, setTicker] = useState('');
   const [shares, setShares] = useState('');
   const [toImport, setToImport] = useState('');
-  const [holdings, setHoldings] = useState<Holding[]>(
-    csvToHoldings(cookies.stocks ? cookies.stocks : defaultHoldings)
-  );
+  const [holdings, setHoldings] = useState<Holding[]>(csvToHoldings(cookies.stocks ? cookies.stocks : defaultHoldings));
 
   const addHolding = (event: React.FormEvent) => {
     event.preventDefault();
-    const newHoldings = [
-      ...holdings,
-      { ticker: ticker, shares: parseInt(shares) },
-    ];
+    const newHoldings = [...holdings, { ticker: ticker, shares: parseInt(shares) }];
     setHoldings(newHoldings);
     setTicker('');
     setShares('');
@@ -141,22 +133,14 @@ const StockList = (props: { holdings: Holding[] }) => {
   }, [props]);
 
   const loadHolding = async (holding: Holding) => {
-    const response = await fetch(
-      base_url + 'stocks/' + holding.ticker + '/' + holding.shares
-    );
+    const response = await fetch(base_url + 'stocks/' + holding.ticker + '/' + holding.shares);
     log('loaded stock: ' + holding.ticker);
     return (await response.json()) as StockData;
   };
 
   const stockElements: JSX.Element[] = [];
   stockData.forEach((stock, index) => {
-    stockElements.push(
-      <Stock
-        style={{ backgroundColor: toColor(index) }}
-        key={stock.ticker}
-        stockData={stock}
-      />
-    );
+    stockElements.push(<Stock style={{ backgroundColor: toColor(index) }} key={stock.ticker} stockData={stock} />);
   });
 
   let totalPortfolioValue = 0;
@@ -176,12 +160,7 @@ const StockList = (props: { holdings: Holding[] }) => {
     });
     chart = (
       <div className="Chart">
-        <PieChart
-          radius={49}
-          data={chartData}
-          animate={true}
-          segmentsShift={1}
-        />
+        <PieChart radius={49} data={chartData} animate={true} segmentsShift={1} />
       </div>
     );
   }
@@ -209,9 +188,7 @@ type StockData = {
   totalValue: number;
 };
 
-const Stock = (
-  props: { stockData: StockData; style: CSSProperties } | { ticker: string }
-) => {
+const Stock = (props: { stockData: StockData; style: CSSProperties } | { ticker: string }) => {
   if ('ticker' in props) {
     return <li>Loading ticker {props.ticker} </li>;
   } else {
