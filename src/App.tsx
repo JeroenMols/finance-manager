@@ -21,8 +21,8 @@ Checkout his portfolio at https://jeroenmols.com
 `);
 
 function csvToHoldings(csv: string): Holding[] {
-  let allValues = csv.split(',');
-  let holdings: Holding[] = [];
+  const allValues = csv.split(',');
+  const holdings: Holding[] = [];
   for (let i = 0; i < allValues.length; i = i + 2) {
     holdings.push({
       ticker: allValues[i].trim(),
@@ -58,7 +58,7 @@ const App = () => {
 
   const addHolding = (event: React.FormEvent) => {
     event.preventDefault();
-    let newHoldings = [
+    const newHoldings = [
       ...holdings,
       { ticker: ticker, shares: parseInt(shares) },
     ];
@@ -70,7 +70,7 @@ const App = () => {
 
   const importHoldings = (event: React.FormEvent) => {
     event.preventDefault();
-    let imported = csvToHoldings(toImport);
+    const imported = csvToHoldings(toImport);
     setHoldings(imported);
     setCookie('stocks', toImport);
     setToImport('');
@@ -129,7 +129,7 @@ const StockList = (props: { holdings: Holding[] }) => {
   const [stockData, setStockData] = useState<StockData[]>([]);
 
   useEffect(() => {
-    let newStocksPromises: Promise<StockData>[] = [];
+    const newStocksPromises: Promise<StockData>[] = [];
     for (let i = 0; i < props.holdings.length; i++) {
       log('loading stock: ' + props.holdings[i].ticker);
       newStocksPromises.push(loadHolding(props.holdings[i]));
@@ -141,14 +141,14 @@ const StockList = (props: { holdings: Holding[] }) => {
   }, [props]);
 
   const loadHolding = async (holding: Holding) => {
-    let response = await fetch(
+    const response = await fetch(
       base_url + 'stocks/' + holding.ticker + '/' + holding.shares
     );
     log('loaded stock: ' + holding.ticker);
     return (await response.json()) as StockData;
   };
 
-  let stockElements: JSX.Element[] = [];
+  const stockElements: JSX.Element[] = [];
   stockData.forEach((stock, index) => {
     stockElements.push(
       <Stock
@@ -167,7 +167,7 @@ const StockList = (props: { holdings: Holding[] }) => {
 
   let chart = <div />;
   if (stockData.length > 0) {
-    let chartData = stockData.map((data, index) => {
+    const chartData = stockData.map((data, index) => {
       return {
         title: data.name,
         value: data.totalValue,
