@@ -30,7 +30,7 @@ export async function login(accountUuid: string) {
 
   if (result.ok) {
     // TODO is there a way to map snake case to camel case?
-    return (await result.json()) as AccountToken;
+    return (await result.json()) as AccessToken;
   }
   return undefined;
 }

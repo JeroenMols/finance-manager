@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { log } from '../log';
 import { useCookies } from 'react-cookie';
 
-const Account = (props: { setAccessToken: (token: string) => void }) => {
+const Account = (props: { setAccessToken: (token: AccessToken) => void }) => {
   const [accountUuid, setAccountUuid] = useState<string>('');
   const [newAccountUuid, setNewAccountUuid] = useState<string>();
   const [cookie, setCookie, removeCookie] = useCookies(['account']);
@@ -24,21 +24,21 @@ const Account = (props: { setAccessToken: (token: string) => void }) => {
         alert('Failed to log in');
       } else {
         setCookie('account', tokenResponse);
-        props.setAccessToken(tokenResponse.access_token);
+        props.setAccessToken(tokenResponse);
       }
     });
   };
 
   if (cookie.account !== undefined) {
-    const accountToken = cookie.account as AccountToken;
-    const expiration = Date.parse(accountToken.expiration_date);
+    const accessToken = cookie.account as AccessToken;
+    const expiration = Date.parse(accessToken.expiration_date);
 
     if (Date.now() > expiration) {
       // TODO handle auto login case
       log('access token expired - logging out');
       removeCookie('account');
     } else {
-      props.setAccessToken(accountToken.access_token);
+      props.setAccessToken(accessToken);
     }
   }
 

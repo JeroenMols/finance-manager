@@ -2,9 +2,9 @@ import './App.css';
 import React, { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
-import { useCookies } from 'react-cookie';
 import { log } from './log';
 import { BASE_URL } from './config';
+import HoldingRepository from './stocks/repository';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -24,40 +24,48 @@ function holdingsToCsv(holdings: Holding[]) {
 
 const defaultHoldings = 'VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7';
 
-type Holding = {
-  ticker: string;
-  shares: number;
-};
-
-const Stocks = () => {
-  const [cookies, setCookie] = useCookies(['stocks']);
-
+const Stocks = (props: { accessToken: AccessToken }) => {
   const [ticker, setTicker] = useState('');
   const [shares, setShares] = useState('');
   const [toImport, setToImport] = useState('');
-  const [holdings, setHoldings] = useState<Holding[]>(csvToHoldings(cookies.stocks ? cookies.stocks : defaultHoldings));
+  const [holdings, setHoldings] = useState<Holding[]>([]);
+
+  // TODO avoid reinstantiating
+  const repo = new HoldingRepository(props.accessToken);
 
   const addHolding = (event: React.FormEvent) => {
     event.preventDefault();
-    const newHoldings = [...holdings, { ticker: ticker, shares: parseInt(shares) }];
-    setHoldings(newHoldings);
-    setTicker('');
-    setShares('');
-    setCookie('stocks', holdingsToCsv(newHoldings));
+    repo.add({ ticker: ticker, shares: parseInt(shares) }).then((holdings) => {
+      if (holdings !== undefined) {
+        setHoldings(holdings as Holding[]);
+        setTicker('');
+        setShares('');
+      } else {
+        alert('Something went very wrong');
+      }
+    });
   };
 
   const importHoldings = (event: React.FormEvent) => {
     event.preventDefault();
     const imported = csvToHoldings(toImport);
     setHoldings(imported);
-    setCookie('stocks', toImport);
     setToImport('');
   };
 
   const exportHoldings = () => {
-    alert(holdingsToCsv(holdings));
+    // alert(holdingsToCsv(holdings));
   };
-  log('Cookie: ' + cookies);
+
+  useEffect(() => {
+    repo.get().then((holdings) => {
+      if (holdings !== undefined) {
+        setHoldings(holdings as Holding[]);
+      } else {
+        alert('Unable to load your holdings');
+      }
+    });
+  }, [props.accessToken]);
 
   return (
     <div className="App">
