@@ -1,10 +1,12 @@
 import { create, login } from './repository';
 import React, { useState } from 'react';
 import { log } from '../log';
+import { useCookies } from 'react-cookie';
 
-const Account = (props: { setLoggedIn: (loggedIn: boolean) => void }) => {
+const Account = (props: { setAccessToken: (token: string) => void }) => {
   const [accountUuid, setAccountUuid] = useState<string>('');
   const [newAccountUuid, setNewAccountUuid] = useState<string>();
+  const [cookie, setCookie, removeCookie] = useCookies(['account']);
 
   const createAccount = () => {
     log('creating new user account');
@@ -21,11 +23,24 @@ const Account = (props: { setLoggedIn: (loggedIn: boolean) => void }) => {
       if (tokenResponse === undefined) {
         alert('Failed to log in');
       } else {
-        // Write cookie and show stock}
-        props.setLoggedIn(true);
+        setCookie('account', tokenResponse);
+        props.setAccessToken(tokenResponse.access_token);
       }
     });
   };
+
+  if (cookie.account !== undefined) {
+    const accountToken = cookie.account as AccountToken;
+    const expiration = Date.parse(accountToken.expiration_date);
+
+    if (Date.now() > expiration) {
+      // TODO handle auto login case
+      log('access token expired - logging out');
+      removeCookie('account');
+    } else {
+      props.setAccessToken(accountToken.access_token);
+    }
+  }
 
   return (
     <div

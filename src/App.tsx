@@ -3,18 +3,18 @@ import Account from './account';
 import Stocks from './stocks';
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [accessToken, setAccessToken] = useState<string>();
 
   return (
     <>
-      {loggedIn === true ? (
-        <Stocks />
-      ) : (
+      {accessToken === undefined ? (
         <Account
-          setLoggedIn={(l: boolean) => {
-            setLoggedIn(l);
+          setAccessToken={(token: string) => {
+            setAccessToken(token);
           }}
         />
+      ) : (
+        <Stocks />
       )}
     </>
   );
