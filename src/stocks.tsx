@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import { useCookies } from 'react-cookie';
 import { log } from './log';
-
-const base_url = process.env.REACT_APP_SERVER_URL;
+import { BASE_URL } from './config';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -120,7 +119,7 @@ const StockList = (props: { holdings: Holding[] }) => {
   }, [props]);
 
   const loadHolding = async (holding: Holding) => {
-    const response = await fetch(base_url + 'stocks/' + holding.ticker + '/' + holding.shares);
+    const response = await fetch(BASE_URL + 'stocks/' + holding.ticker + '/' + holding.shares);
     log('loaded stock: ' + holding.ticker);
     return (await response.json()) as StockData;
   };
