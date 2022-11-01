@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Login from './login';
+import Account from './account';
 import Stocks from './stocks';
 
 const App = () => {
@@ -10,9 +10,9 @@ const App = () => {
       {loggedIn === true ? (
         <Stocks />
       ) : (
-        <Login
-          setLoggedIn={(loggedIn: boolean) => {
-            setLoggedIn(loggedIn);
+        <Account
+          setLoggedIn={(l: boolean) => {
+            setLoggedIn(l);
           }}
         />
       )}
