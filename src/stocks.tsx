@@ -22,6 +22,15 @@ function holdingsToCsv(holdings: Holding[]) {
   return holdings.map((a) => a.ticker + ',' + a.shares).reduce((a, b) => a + ',' + b);
 }
 
+async function batchAddHoldings(repo: HoldingRepository, holdings: Holding[]) {
+  let result: Holding[] = [];
+  for (const holding of holdings) {
+    // TODO error handling
+    result = (await repo.add(holding)) as Holding[];
+  }
+  return result;
+}
+
 const defaultHoldings = 'VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7';
 
 const Stocks = (props: { accessToken: AccessToken }) => {
@@ -49,12 +58,14 @@ const Stocks = (props: { accessToken: AccessToken }) => {
   const importHoldings = (event: React.FormEvent) => {
     event.preventDefault();
     const imported = csvToHoldings(toImport);
-    setHoldings(imported);
-    setToImport('');
+    const uploaded = batchAddHoldings(repo, imported).then((holdings) => {
+      setHoldings(holdings);
+      setToImport('');
+    });
   };
 
   const exportHoldings = () => {
-    // alert(holdingsToCsv(holdings));
+    alert(holdingsToCsv(holdings));
   };
 
   useEffect(() => {
