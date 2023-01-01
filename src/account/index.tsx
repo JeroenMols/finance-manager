@@ -48,12 +48,11 @@ const Account = (props: { setAccessToken: (token: AccessToken) => void }) => {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
         alignItems: 'center',
         minHeight: 1000,
       }}
     >
-      <h1>Welcome to the stocks app</h1>
+      <h1>Welcome to the Finance Manager</h1>
       <div
         style={{
           width: '90%',

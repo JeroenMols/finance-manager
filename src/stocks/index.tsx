@@ -87,42 +87,43 @@ const Stocks = (props: { accessToken: AccessToken }) => {
         alignItems: 'center',
       }}
     >
-      <h1>Welcome to the stocks app</h1>
-      <form onSubmit={addHolding}>
-        <label>
-          Add holding:
-          <input
-            type="text"
-            placeholder="Ticker"
-            value={ticker}
-            onChange={(e) => {
-              setTicker(e.target.value);
-            }}
-          />
-          <input
-            type="number"
-            placeholder="Amount of shares"
-            value={shares}
-            onChange={(e) => {
-              setShares(e.target.value);
-            }}
-          />
-        </label>
-        <input type="submit" value="Add" />
+      <h1>Overview of your portfolio</h1>
+      <form style={{ display: 'flex', width: '800px', justifyContent: 'center', gap: '10px' }} onSubmit={addHolding}>
+        <input
+          type="text"
+          placeholder="Ticker"
+          value={ticker}
+          onChange={(e) => {
+            setTicker(e.target.value);
+          }}
+        />
+        <input
+          type="number"
+          placeholder="Amount of shares"
+          value={shares}
+          onChange={(e) => {
+            setShares(e.target.value);
+          }}
+        />
+        <input type="submit" value="Add holding" />
       </form>
       <StockList holdings={holdings} />
       <br />
-      <form onSubmit={importHoldings}>
-        <input
-          type="text"
-          value={toImport}
-          onChange={(e) => {
-            setToImport(e.target.value);
-          }}
-        />
-        <input type="submit" value="Import Stocks" />
-      </form>
-      <button onClick={exportHoldings}>Export stocks</button>
+      <div style={{ display: 'flex', width: '800px', justifyContent: 'center', gap: '10px' }}>
+        <form onSubmit={importHoldings}>
+          <input
+            style={{ marginRight: '10px' }}
+            type="text"
+            value={toImport}
+            onChange={(e) => {
+              setToImport(e.target.value);
+            }}
+          />
+          <input type="submit" value="Import Stocks" />
+        </form>
+        <div> or </div>
+        <button onClick={exportHoldings}>Export stocks</button>
+      </div>
     </div>
   );
 };
