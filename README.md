@@ -1,6 +1,8 @@
 # Finance manager
 Get an overview of your net worth by tracking all your equities, across brokers, in one simple interface.
 
+<img src="screenshots/screenshot_1.png" width=330> <img src="screenshots/screenshot_2.png" width=330> <img src="screenshots/screenshot_3.png" width=330>
+
 I've built this as a side project to learn react, javascript, eslint, prettier, node, postgress and heroku web deployment.
 
 ## Getting started
