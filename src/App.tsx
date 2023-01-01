@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Account from './account';
+import { AccessToken } from './account/models';
 import Stocks from './stocks';
 
 const App = () => {

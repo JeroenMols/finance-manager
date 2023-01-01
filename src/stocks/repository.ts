@@ -1,4 +1,6 @@
+import { AccessToken } from '../account/models';
 import { BASE_URL } from '../config';
+import { Holding } from './models';
 
 class HoldingRepository {
   private accessToken;

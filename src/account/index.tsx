@@ -1,7 +1,8 @@
 import { create, login } from './repository';
 import React, { useState } from 'react';
-import { log } from '../log';
+import { log } from '../utilities/log';
 import { useCookies } from 'react-cookie';
+import { AccessToken } from './models';
 
 const Account = (props: { setAccessToken: (token: AccessToken) => void }) => {
   const [accountUuid, setAccountUuid] = useState<string>('');
