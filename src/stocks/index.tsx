@@ -183,24 +183,18 @@ const StockList = (props: { holdings: Holding[] }) => {
       {stockElements}
       <li
         style={{
-          textAlign: 'left',
+          display: 'flex',
           color: '#FFF',
           width: '800px',
           backgroundColor: '#F19A3E',
           padding: '10px',
           margin: '5px',
-          listStyleType: 'none',
           borderRadius: '10px',
           fontWeight: 'bold',
-          display: 'grid',
-          gridTemplateColumns: '60% 10% 10% 8% 12%',
         }}
       >
-        <div>Total portfolio value</div>
-        <div></div>
-        <div style={{ textAlign: 'right' }} />
-        <div style={{ textAlign: 'right' }} />
-        <div style={{ textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
+        <div style={{ width: '80%' }}>Total portfolio value</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
       </li>
     </ul>
   );
@@ -220,28 +214,25 @@ const Stock = (props: { stockData: StockData; style: CSSProperties } | { ticker:
   } else {
     console.log('returning item');
     return (
-      <li
+      <div
         style={{
-          textAlign: 'left',
+          display: 'flex',
           color: '#FFF',
           width: '800px',
           backgroundColor: '#F19A3E',
           padding: '10px',
           margin: '5px',
-          listStyleType: 'none',
           borderRadius: '10px',
           fontWeight: 'bold',
-          display: 'grid',
-          gridTemplateColumns: '60% 10% 10% 8% 12%',
           ...props.style,
         }}
       >
-        <div>{props.stockData.name}</div>
-        <div>{props.stockData.ticker}</div>
-        <div style={{ textAlign: 'right' }}>{props.stockData.price.toFixed(2)}</div>
-        <div style={{ textAlign: 'right' }}>{props.stockData.shares}</div>
-        <div style={{ textAlign: 'right' }}>{props.stockData.totalValue.toFixed(2)}</div>
-      </li>
+        <div style={{ width: '60%' }}>{props.stockData.name}</div>
+        <div style={{ width: '10%' }}>{props.stockData.ticker}</div>
+        <div style={{ width: '10%', textAlign: 'right' }}>{props.stockData.price.toFixed(2)}</div>
+        <div style={{ width: '8%', textAlign: 'right' }}>{props.stockData.shares}</div>
+        <div style={{ width: '12%', textAlign: 'right' }}>{props.stockData.totalValue.toFixed(2)}</div>
+      </div>
     );
   }
 };
