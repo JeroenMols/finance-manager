@@ -1,4 +1,3 @@
-import '../App.css';
 import React, { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
@@ -81,7 +80,14 @@ const Stocks = (props: { accessToken: AccessToken }) => {
   }, [props.accessToken]);
 
   return (
-    <div className="App">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <h1>Welcome to the stocks app</h1>
       <form onSubmit={addHolding}>
         <label>
@@ -166,22 +172,36 @@ const StockList = (props: { holdings: Holding[] }) => {
       };
     });
     chart = (
-      <div className="Chart">
+      <div style={{ width: '300px', height: '300px', padding: '20px', margin: '0px auto' }}>
         <PieChart radius={49} data={chartData} animate={true} segmentsShift={1} />
       </div>
     );
   }
 
   return (
-    <ul className="StockList">
+    <ul style={{ paddingInlineStart: '0px', display: 'inline-block' }}>
       {chart}
       {stockElements}
-      <li className="Stock">
+      <li
+        style={{
+          textAlign: 'left',
+          color: '#FFF',
+          width: '800px',
+          backgroundColor: '#F19A3E',
+          padding: '10px',
+          margin: '5px',
+          listStyleType: 'none',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          display: 'grid',
+          gridTemplateColumns: '60% 10% 10% 8% 12%',
+        }}
+      >
         <div>Total portfolio value</div>
         <div></div>
-        <div className="Value" />
-        <div className="Value" />
-        <div className="Value">{totalPortfolioValue.toFixed(2)}</div>
+        <div style={{ textAlign: 'right' }} />
+        <div style={{ textAlign: 'right' }} />
+        <div style={{ textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
       </li>
     </ul>
   );
@@ -199,13 +219,29 @@ const Stock = (props: { stockData: StockData; style: CSSProperties } | { ticker:
   if ('ticker' in props) {
     return <li>Loading ticker {props.ticker} </li>;
   } else {
+    console.log('returning item');
     return (
-      <li className="Stock" {...props}>
+      <li
+        style={{
+          textAlign: 'left',
+          color: '#FFF',
+          width: '800px',
+          backgroundColor: '#F19A3E',
+          padding: '10px',
+          margin: '5px',
+          listStyleType: 'none',
+          borderRadius: '10px',
+          fontWeight: 'bold',
+          display: 'grid',
+          gridTemplateColumns: '60% 10% 10% 8% 12%',
+          ...props.style,
+        }}
+      >
         <div>{props.stockData.name}</div>
         <div>{props.stockData.ticker}</div>
-        <div className="Value">{props.stockData.price.toFixed(2)}</div>
-        <div className="Value">{props.stockData.shares}</div>
-        <div className="Value">{props.stockData.totalValue.toFixed(2)}</div>
+        <div style={{ textAlign: 'right' }}>{props.stockData.price.toFixed(2)}</div>
+        <div style={{ textAlign: 'right' }}>{props.stockData.shares}</div>
+        <div style={{ textAlign: 'right' }}>{props.stockData.totalValue.toFixed(2)}</div>
       </li>
     );
   }
