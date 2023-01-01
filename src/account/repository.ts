@@ -1,4 +1,5 @@
 import { BASE_URL } from '../config';
+import { AccessToken, AccountCreateResponse } from './models';
 
 export async function create() {
   const result = await fetch(BASE_URL + 'account/create', {
