@@ -6,6 +6,7 @@ import { BASE_URL } from '../config';
 import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
+import { toColor } from '../utilities/colors';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -244,23 +245,3 @@ const Stock = (props: { stockData: StockData; style: CSSProperties } | { ticker:
     );
   }
 };
-
-const colors = [
-  '#C62828',
-  '#AD1457',
-  '#6A1B9A',
-  '#283593',
-  '#1565C0',
-  '#00838F',
-  '#2E7D32',
-  '#9E9D24',
-  '#F9A825',
-  '#EF6C00',
-  '#D84315',
-  '#4E342E',
-  '#37474F',
-];
-
-function toColor(index: number) {
-  return colors[index % colors.length];
-}
