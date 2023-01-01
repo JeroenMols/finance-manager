@@ -32,8 +32,6 @@ async function batchAddHoldings(repo: HoldingRepository, holdings: Holding[]) {
   return result;
 }
 
-const defaultHoldings = 'VOO,6,IWDA.AS,30,MSFT,3,AAPL,5,TSLA,4,GOOG,7,NVDA,6,AMZN,7';
-
 const Stocks = (props: { accessToken: AccessToken }) => {
   const [ticker, setTicker] = useState('');
   const [shares, setShares] = useState('');
