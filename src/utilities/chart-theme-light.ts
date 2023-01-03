@@ -4,7 +4,7 @@
  */
 
 const colors = ['#252525', '#525252', '#737373', '#969696', '#bdbdbd', '#d9d9d9', '#f0f0f0'];
-const charcoal = '#000';
+const charcoal = '#fff';
 const grey = '#969696';
 
 // Typography
@@ -37,7 +37,7 @@ const strokeLinecap = 'round';
 const strokeLinejoin = 'round';
 
 // Put it all together...
-export const chartTheme = {
+export const chartThemeLight = {
   area: Object.assign(
     {
       style: {

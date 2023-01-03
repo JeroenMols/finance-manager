@@ -6,9 +6,10 @@ import { BASE_URL } from '../config';
 import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
-import { toColor } from '../utilities/colors';
-import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
+import { stockColors, toColor } from '../utilities/colors';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryStack } from 'victory';
 import { chartTheme } from '../utilities/chart-theme';
+import { chartThemeLight } from '../utilities/chart-theme-light';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -174,7 +175,7 @@ const StockList = (props: { holdings: Holding[] }) => {
       };
     });
     chart = (
-      <div style={{ width: '300px', height: '300px', padding: '20px', margin: '0px auto' }}>
+      <div style={{ width: '250px', height: '250px', padding: '20px', margin: '0px auto' }}>
         <PieChart radius={49} data={chartData} animate={true} segmentsShift={1} />
       </div>
     );
@@ -197,7 +198,67 @@ const StockList = (props: { holdings: Holding[] }) => {
         <div style={{ width: '80%' }}>Total portfolio value</div>
         <div style={{ width: '20%', textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
       </div>
+      {stockElements.length > 0 ? <PortfolioHistory stocks={stockData} /> : <></>}
     </div>
+  );
+};
+
+type HistoryItem = {
+  ticker: string;
+  prices: StockPrice[];
+};
+
+const PortfolioHistory = (props: { stocks: StockData[] }) => {
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
+
+  useEffect(() => {
+    const newStocksPromises: Promise<HistoryItem>[] = [];
+    for (let i = 0; i < props.stocks.length; i++) {
+      log('loading history: ' + props.stocks[i].ticker);
+      newStocksPromises.push(loadHistory(props.stocks[i]));
+    }
+    Promise.all(newStocksPromises).then((historyData) => {
+      log(newStocksPromises);
+      setHistoryData(historyData);
+    });
+  }, [props]);
+
+  let tickValues: string[] = [];
+  let tickFormat: string[] = [];
+  const bars: JSX.Element[] = [];
+  if (historyData.length > 0) {
+    const item = historyData[0].prices;
+    tickValues = item.map((item) => item.date);
+    tickFormat = tickValues.map((date) => new Date(Date.parse(date)).toLocaleString('default', { month: 'short' }));
+
+    historyData.forEach((item) => {
+      bars.push(<VictoryBar data={item.prices} x="date" y="price" />);
+    });
+  }
+
+  const loadHistory = async (stock: StockData) => {
+    const response = await fetch(BASE_URL + 'stocks/history/' + stock.ticker + '/' + stock.shares);
+    log('loaded history: ' + stock.ticker);
+    return { ticker: stock.ticker, prices: (await response.json()) as StockPrice[] };
+  };
+  return (
+    <>
+      {historyData.length > 0 ? (
+        <VictoryChart
+          domainPadding={20}
+          theme={chartTheme}
+          height={200}
+          width={600}
+          padding={{ top: 20, right: 30, bottom: 30, left: 50 }}
+        >
+          <VictoryAxis tickValues={tickValues} tickFormat={tickFormat} />
+          <VictoryAxis dependentAxis tickFormat={(x) => `$${x}`} />
+          <VictoryStack colorScale={stockColors}>{bars}</VictoryStack>
+        </VictoryChart>
+      ) : (
+        'loading history'
+      )}
+    </>
   );
 };
 
@@ -274,7 +335,7 @@ const StockDetails: React.FC<StockHistoryProps> = ({ ticker }) => {
         <div>Loading...</div>
       ) : (
         <VictoryChart
-          theme={chartTheme}
+          theme={chartThemeLight}
           height={200}
           width={600}
           padding={{ top: 20, right: 30, bottom: 30, left: 50 }}
