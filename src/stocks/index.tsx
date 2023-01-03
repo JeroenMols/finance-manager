@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { PieChart } from 'react-minimal-pie-chart';
 import { log } from '../utilities/log';
@@ -7,7 +7,8 @@ import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
 import { toColor } from '../utilities/colors';
-import { prototype } from 'events';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryTheme } from 'victory';
+import { chartTheme } from '../utilities/chart-theme';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -265,19 +266,20 @@ const StockDetails: React.FC<StockDetailsProps> = ({ ticker }) => {
     return (await response.json()) as StockHistory[];
   };
 
-  const items: JSX.Element[] = [];
-  history.forEach((item) => {
-    items.push(
-      <div>
-        {item.date} : {item.price}
-      </div>
-    );
-  });
+  const tickValues = history.map((item) => item.date);
+  const tickFormat = tickValues.map((date) => new Date(Date.parse(date)).toLocaleString('default', { month: 'short' }));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div>History for {ticker}</div>
-      {items.length === 0 ? <div>Loading...</div> : items}
+      {history.length === 0 ? (
+        <div>Loading...</div>
+      ) : (
+        <VictoryChart theme={chartTheme} height={200} width={600}>
+          <VictoryAxis tickValues={tickValues} tickFormat={tickFormat} />
+          <VictoryAxis dependentAxis tickFormat={(x) => `$${x}`} />
+          <VictoryLine data={history} x="date" y="price" />
+        </VictoryChart>
+      )}
     </div>
   );
 };
