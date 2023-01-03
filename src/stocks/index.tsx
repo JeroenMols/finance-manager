@@ -154,7 +154,7 @@ const StockList = (props: { holdings: Holding[] }) => {
 
   const stockElements: JSX.Element[] = [];
   stockData.forEach((stock, index) => {
-    stockElements.push(<Stock color={toColor(index)} key={stock.ticker} ticker={stock.ticker} stockData={stock} />);
+    stockElements.push(<Stock color={toColor(index)} ticker={stock.ticker} stockData={stock} />);
   });
 
   let totalPortfolioValue = 0;
@@ -180,25 +180,24 @@ const StockList = (props: { holdings: Holding[] }) => {
   }
 
   return (
-    <ul style={{ paddingInlineStart: '0px', display: 'inline-block' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
       {chart}
       {stockElements}
-      <li
+      <div
         style={{
           display: 'flex',
           color: '#FFF',
           width: '800px',
           backgroundColor: '#F19A3E',
           padding: '10px',
-          margin: '5px',
           borderRadius: '10px',
           fontWeight: 'bold',
         }}
       >
         <div style={{ width: '80%' }}>Total portfolio value</div>
         <div style={{ width: '20%', textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
-      </li>
-    </ul>
+      </div>
+    </div>
   );
 };
 
@@ -224,7 +223,6 @@ const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
         color: '#FFF',
         width: '800px',
         padding: '10px',
-        margin: '5px',
         borderRadius: '10px',
         fontWeight: 'bold',
         backgroundColor: color,
