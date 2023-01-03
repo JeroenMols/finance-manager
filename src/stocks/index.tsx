@@ -132,6 +132,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
 export default Stocks;
 
 const StockList = (props: { holdings: Holding[] }) => {
+  const [stockHistory, setStockHistory] = useState<string | undefined>(undefined);
   const [stockData, setStockData] = useState<StockData[]>([]);
 
   useEffect(() => {
@@ -146,6 +147,10 @@ const StockList = (props: { holdings: Holding[] }) => {
     });
   }, [props]);
 
+  const handleClick = (ticker: string) => {
+    setStockHistory(ticker);
+  };
+
   const loadHolding = async (holding: Holding) => {
     const response = await fetch(BASE_URL + 'stocks/' + holding.ticker + '/' + holding.shares);
     log('loaded stock: ' + holding.ticker);
@@ -154,7 +159,7 @@ const StockList = (props: { holdings: Holding[] }) => {
 
   const stockElements: JSX.Element[] = [];
   stockData.forEach((stock, index) => {
-    stockElements.push(<Stock color={toColor(index)} ticker={stock.ticker} stockData={stock} />);
+    stockElements.push(<Stock color={toColor(index)} ticker={stock.ticker} stockData={stock} onClick={handleClick} />);
   });
 
   let totalPortfolioValue = 0;
@@ -196,6 +201,7 @@ const StockList = (props: { holdings: Holding[] }) => {
         <div style={{ width: '80%' }}>Total portfolio value</div>
         <div style={{ width: '20%', textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
       </div>
+      {stockHistory !== undefined ? <StockDetails ticker={stockHistory} /> : ''}
     </div>
   );
 };
@@ -212,9 +218,10 @@ interface StockProps {
   ticker: string;
   stockData: StockData;
   color: string;
+  onClick: (ticker: string) => void;
 }
 
-const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
+const Stock: React.FC<StockProps> = ({ ticker, stockData, color, onClick }) => {
   return (
     <div
       style={{
@@ -226,12 +233,51 @@ const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
         fontWeight: 'bold',
         backgroundColor: color,
       }}
+      onClick={() => onClick(ticker)}
     >
       <div style={{ width: '50%' }}>{stockData.name}</div>
       <div style={{ width: '12%' }}>{stockData.ticker}</div>
       <div style={{ width: '12%', textAlign: 'right' }}>{stockData.price.toFixed(2)}</div>
       <div style={{ width: '10%', textAlign: 'right' }}>{stockData.shares}</div>
       <div style={{ width: '14%', textAlign: 'right' }}>{stockData.totalValue.toFixed(2)}</div>
+    </div>
+  );
+};
+
+type StockHistory = {
+  date: string;
+  price: number;
+  totalValue: number;
+};
+
+interface StockDetailsProps {
+  ticker: string;
+}
+
+const StockDetails: React.FC<StockDetailsProps> = ({ ticker }) => {
+  const [history, setHistory] = useState<StockHistory[]>([]);
+  useEffect(() => {
+    loadHistory(ticker).then((history) => setHistory(history));
+  }, [ticker]);
+
+  const loadHistory = async (ticker: string): Promise<StockHistory[]> => {
+    const response = await fetch(BASE_URL + 'stocks/history/' + ticker + '/' + '1');
+    return (await response.json()) as StockHistory[];
+  };
+
+  const items: JSX.Element[] = [];
+  history.forEach((item) => {
+    items.push(
+      <div>
+        {item.date} : {item.price}
+      </div>
+    );
+  });
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div>History for {ticker}</div>
+      {items.length === 0 ? <div>Loading...</div> : items}
     </div>
   );
 };
