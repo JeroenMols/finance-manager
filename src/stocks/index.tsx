@@ -7,6 +7,7 @@ import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
 import { toColor } from '../utilities/colors';
+import { prototype } from 'events';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -153,7 +154,7 @@ const StockList = (props: { holdings: Holding[] }) => {
 
   const stockElements: JSX.Element[] = [];
   stockData.forEach((stock, index) => {
-    stockElements.push(<Stock style={{ backgroundColor: toColor(index) }} key={stock.ticker} stockData={stock} />);
+    stockElements.push(<Stock color={toColor(index)} key={stock.ticker} ticker={stock.ticker} stockData={stock} />);
   });
 
   let totalPortfolioValue = 0;
@@ -209,31 +210,31 @@ type StockData = {
   totalValue: number;
 };
 
-const Stock = (props: { stockData: StockData; style: CSSProperties } | { ticker: string }) => {
-  if ('ticker' in props) {
-    return <li>Loading ticker {props.ticker} </li>;
-  } else {
-    console.log('returning item');
-    return (
-      <div
-        style={{
-          display: 'flex',
-          color: '#FFF',
-          width: '800px',
-          backgroundColor: '#F19A3E',
-          padding: '10px',
-          margin: '5px',
-          borderRadius: '10px',
-          fontWeight: 'bold',
-          ...props.style,
-        }}
-      >
-        <div style={{ width: '60%' }}>{props.stockData.name}</div>
-        <div style={{ width: '10%' }}>{props.stockData.ticker}</div>
-        <div style={{ width: '10%', textAlign: 'right' }}>{props.stockData.price.toFixed(2)}</div>
-        <div style={{ width: '8%', textAlign: 'right' }}>{props.stockData.shares}</div>
-        <div style={{ width: '12%', textAlign: 'right' }}>{props.stockData.totalValue.toFixed(2)}</div>
-      </div>
-    );
-  }
+interface StockProps {
+  ticker: string;
+  stockData: StockData;
+  color: string;
+}
+
+const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        color: '#FFF',
+        width: '800px',
+        padding: '10px',
+        margin: '5px',
+        borderRadius: '10px',
+        fontWeight: 'bold',
+        backgroundColor: color,
+      }}
+    >
+      <div style={{ width: '60%' }}>{stockData.name}</div>
+      <div style={{ width: '10%' }}>{stockData.ticker}</div>
+      <div style={{ width: '10%', textAlign: 'right' }}>{stockData.price.toFixed(2)}</div>
+      <div style={{ width: '8%', textAlign: 'right' }}>{stockData.shares}</div>
+      <div style={{ width: '12%', textAlign: 'right' }}>{stockData.totalValue.toFixed(2)}</div>
+    </div>
+  );
 };
