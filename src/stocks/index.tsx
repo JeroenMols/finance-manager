@@ -6,8 +6,8 @@ import { BASE_URL } from '../config';
 import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
-import { toColor } from '../utilities/colors';
-import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
+import { stockColors, toColor } from '../utilities/colors';
+import { VictoryAxis, VictoryChart, VictoryLine, VictoryPie } from 'victory';
 import { chartTheme } from '../utilities/chart-theme';
 
 function csvToHoldings(csv: string): Holding[] {
@@ -164,25 +164,36 @@ const StockList = (props: { holdings: Holding[] }) => {
     totalPortfolioValue += stockData[i].totalValue;
   }
 
-  let chart = <div />;
+  let chartData: { x: string; y: number }[] = [{ x: '', y: 0 }];
   if (stockData.length > 0) {
-    const chartData = stockData.map((data, index) => {
+    chartData = stockData.map((data) => {
       return {
-        title: data.name,
-        value: data.totalValue,
-        color: toColor(index),
+        x: data.name,
+        y: data.totalValue,
       };
     });
-    chart = (
-      <div style={{ width: '300px', height: '300px', padding: '20px', margin: '0px auto' }}>
-        <PieChart radius={49} data={chartData} animate={true} segmentsShift={1} />
-      </div>
-    );
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '90%', maxWidth: '800px' }}>
-      {chart}
+      <VictoryPie
+        data={chartData}
+        animate={{ easing: 'exp' }}
+        colorScale={stockColors}
+        labels={() => ''}
+        padding={{ top: 20, right: 0, bottom: 20, left: 0 }}
+        style={{
+          parent: {
+            width: '300px',
+            height: '300px',
+            margin: '0px auto',
+          },
+          data: {
+            stroke: '#fff',
+            strokeWidth: 5,
+          },
+        }}
+      />
       {stockElements}
       <div
         style={{

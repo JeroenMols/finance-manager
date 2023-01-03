@@ -1,4 +1,4 @@
-const stockColors = [
+export const stockColors = [
   '#C62828',
   '#AD1457',
   '#6A1B9A',
