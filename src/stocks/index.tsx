@@ -180,14 +180,13 @@ const StockList = (props: { holdings: Holding[] }) => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '90%', maxWidth: '800px' }}>
       {chart}
       {stockElements}
       <div
         style={{
           display: 'flex',
           color: '#FFF',
-          width: '800px',
           backgroundColor: '#F19A3E',
           padding: '10px',
           borderRadius: '10px',
@@ -221,18 +220,18 @@ const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
       style={{
         display: 'flex',
         color: '#FFF',
-        width: '800px',
         padding: '10px',
+        gap: '10px',
         borderRadius: '10px',
         fontWeight: 'bold',
         backgroundColor: color,
       }}
     >
-      <div style={{ width: '60%' }}>{stockData.name}</div>
-      <div style={{ width: '10%' }}>{stockData.ticker}</div>
-      <div style={{ width: '10%', textAlign: 'right' }}>{stockData.price.toFixed(2)}</div>
-      <div style={{ width: '8%', textAlign: 'right' }}>{stockData.shares}</div>
-      <div style={{ width: '12%', textAlign: 'right' }}>{stockData.totalValue.toFixed(2)}</div>
+      <div style={{ width: '50%' }}>{stockData.name}</div>
+      <div style={{ width: '12%' }}>{stockData.ticker}</div>
+      <div style={{ width: '12%', textAlign: 'right' }}>{stockData.price.toFixed(2)}</div>
+      <div style={{ width: '10%', textAlign: 'right' }}>{stockData.shares}</div>
+      <div style={{ width: '14%', textAlign: 'right' }}>{stockData.totalValue.toFixed(2)}</div>
     </div>
   );
 };
