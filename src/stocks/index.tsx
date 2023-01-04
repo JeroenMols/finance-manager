@@ -7,7 +7,7 @@ import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
 import { stockColors, toColor } from '../utilities/colors';
-import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
+import { VictoryArea, VictoryAxis, VictoryChart, VictoryStack } from 'victory';
 import { chartTheme } from '../utilities/chart-theme';
 import { Stock, StockData, StockPrice } from './stock';
 
@@ -225,14 +225,14 @@ const PortfolioHistory = (props: { stocks: StockData[] }) => {
 
   let tickValues: string[] = [];
   let tickFormat: string[] = [];
-  const bars: JSX.Element[] = [];
+  const areaItems: JSX.Element[] = [];
   if (historyData.length > 0) {
     const item = historyData[0].prices;
     tickValues = item.map((item) => item.date);
     tickFormat = tickValues.map((date) => new Date(Date.parse(date)).toLocaleString('default', { month: 'short' }));
 
     historyData.forEach((item) => {
-      bars.push(<VictoryBar data={item.prices} x="date" y="price" />);
+      areaItems.push(<VictoryArea data={item.prices} x="date" y="price" />);
     });
   }
 
@@ -252,7 +252,7 @@ const PortfolioHistory = (props: { stocks: StockData[] }) => {
         >
           <VictoryAxis tickValues={tickValues} tickFormat={tickFormat} />
           <VictoryAxis dependentAxis tickFormat={(x) => `$${x}`} />
-          <VictoryStack colorScale={stockColors}>{bars}</VictoryStack>
+          <VictoryStack colorScale={stockColors}>{areaItems}</VictoryStack>
         </VictoryChart>
       ) : (
         'loading history'
