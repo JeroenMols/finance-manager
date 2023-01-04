@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { VictoryAxis, VictoryChart, VictoryLine } from 'victory';
 import { BASE_URL } from '../config';
 import { chartThemeLight } from '../utilities/chart-theme-light';
+import { ReactComponent as ExpandSvg } from '../img/arrow-expand.svg';
+import { ReactComponent as CollapseSvg } from '../img/arrow-collapse.svg';
 
 interface StockProps {
   ticker: string;
@@ -17,7 +19,7 @@ export const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
       style={{
         display: 'flex',
         color: '#FFF',
-        padding: '10px',
+        padding: '10px 20px',
         gap: '10px',
         borderRadius: '10px',
         fontWeight: 'bold',
@@ -26,12 +28,11 @@ export const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
       }}
       onClick={() => setShowDetails(!showDetails)}
     >
-      <div style={{ display: 'flex' }}>
-        <div style={{ width: '50%' }}>{stockData.name}</div>
-        <div style={{ width: '12%' }}>{stockData.ticker}</div>
-        <div style={{ width: '12%', textAlign: 'right' }}>{stockData.price.toFixed(2)}</div>
-        <div style={{ width: '10%', textAlign: 'right' }}>{stockData.shares}</div>
-        <div style={{ width: '14%', textAlign: 'right' }}>{stockData.totalValue.toFixed(2)}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ flexGrow: 1 }}>{stockData.name}</div>
+        <div style={{ textAlign: 'right' }}>11%</div>
+        <div style={{ width: '20%', textAlign: 'right', paddingRight: '10px' }}>{stockData.totalValue.toFixed(2)}</div>
+        {showDetails ? <CollapseSvg fill="#fff" /> : <ExpandSvg fill="#fff" />}
       </div>
       {showDetails ? <StockDetails ticker={ticker} /> : <></>}
     </div>
@@ -59,7 +60,9 @@ const StockDetails: React.FC<StockDetailsProps> = ({ ticker }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', margin: '0px 50px' }}>
       {history.length === 0 ? (
-        <div>Loading...</div>
+        <div style={{ height: '185px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div>Loading...</div>
+        </div>
       ) : (
         <VictoryChart
           theme={chartThemeLight}
@@ -72,6 +75,40 @@ const StockDetails: React.FC<StockDetailsProps> = ({ ticker }) => {
           <VictoryLine data={history} x="date" y="price" />
         </VictoryChart>
       )}
+      <div style={{ display: 'flex', width: '100%', paddingTop: '30px' }}>
+        <div style={{ width: '25%' }}>Ticker:</div>
+        <div style={{ width: '25%' }}>{ticker}</div>
+        <div style={{ width: '25%' }}>Average price:</div>
+        <div style={{ width: '25%' }}>110 $</div>
+      </div>
+      <div style={{ display: 'flex', width: '100%' }}>
+        <div style={{ width: '25%' }}>Shares:</div>
+        <div style={{ width: '25%' }}>10</div>
+        <div style={{ width: '25%' }}>Buying cost:</div>
+        <div style={{ width: '25%' }}>30 $</div>
+      </div>
+      <div style={{ paddingTop: '30px' }}>Transaction history:</div>
+      <div style={{ display: 'flex', width: '100%', padding: '10px 10px 0 10px' }}>
+        <div style={{ width: '20%' }}>10/02/2022</div>
+        <div style={{ width: '20%' }}>Buy</div>
+        <div style={{ width: '10%' }}>7</div>
+        <div style={{ width: '15%', textAlign: 'right' }}>112$</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>10$</div>
+      </div>
+      <div style={{ display: 'flex', width: '100%', padding: '10px 10px 0 10px' }}>
+        <div style={{ width: '20%' }}>10/02/2022</div>
+        <div style={{ width: '20%' }}>Buy</div>
+        <div style={{ width: '10%' }}>7</div>
+        <div style={{ width: '15%', textAlign: 'right' }}>112$</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>10$</div>
+      </div>
+      <div style={{ display: 'flex', width: '100%', padding: '10px 10px 20px 10px' }}>
+        <div style={{ width: '20%' }}>10/02/2022</div>
+        <div style={{ width: '20%' }}>Buy</div>
+        <div style={{ width: '10%' }}>7</div>
+        <div style={{ width: '15%', textAlign: 'right' }}>112$</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>10$</div>
+      </div>
     </div>
   );
 };
