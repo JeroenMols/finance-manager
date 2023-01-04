@@ -34,20 +34,20 @@ export const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
         <div style={{ width: '20%', textAlign: 'right', paddingRight: '10px' }}>{stockData.totalValue.toFixed(2)}</div>
         {showDetails ? <CollapseSvg fill="#fff" /> : <ExpandSvg fill="#fff" />}
       </div>
-      {showDetails ? <StockDetails ticker={ticker} /> : <></>}
+      {showDetails ? <StockDetails stockData={stockData} /> : <></>}
     </div>
   );
 };
 
 interface StockDetailsProps {
-  ticker: string;
+  stockData: StockData;
 }
 
-const StockDetails: React.FC<StockDetailsProps> = ({ ticker }) => {
+const StockDetails: React.FC<StockDetailsProps> = ({ stockData }) => {
   const [history, setHistory] = useState<StockPrice[]>([]);
   useEffect(() => {
-    loadHistory(ticker).then((history) => setHistory(history));
-  }, [ticker]);
+    loadHistory(stockData.ticker).then((history) => setHistory(history));
+  }, [stockData]);
 
   const loadHistory = async (ticker: string): Promise<StockPrice[]> => {
     const response = await fetch(BASE_URL + 'stocks/history/' + ticker + '/' + '1');
@@ -76,16 +76,20 @@ const StockDetails: React.FC<StockDetailsProps> = ({ ticker }) => {
         </VictoryChart>
       )}
       <div style={{ display: 'flex', width: '100%', paddingTop: '30px' }}>
-        <div style={{ width: '25%' }}>Ticker:</div>
-        <div style={{ width: '25%' }}>{ticker}</div>
-        <div style={{ width: '25%' }}>Average price:</div>
+        <div style={{ width: '25%' }}>Ticker</div>
+        <div style={{ width: '25%' }}>{stockData.ticker}</div>
+        <div style={{ width: '25%' }}>Average price</div>
         <div style={{ width: '25%' }}>110 $</div>
       </div>
       <div style={{ display: 'flex', width: '100%' }}>
-        <div style={{ width: '25%' }}>Shares:</div>
-        <div style={{ width: '25%' }}>10</div>
-        <div style={{ width: '25%' }}>Buying cost:</div>
+        <div style={{ width: '25%' }}>Share price</div>
+        <div style={{ width: '25%' }}>{stockData.price}</div>
+        <div style={{ width: '25%' }}>Buying cost</div>
         <div style={{ width: '25%' }}>30 $</div>
+      </div>
+      <div style={{ display: 'flex', width: '100%' }}>
+        <div style={{ width: '25%' }}>Shares</div>
+        <div style={{ width: '25%' }}>{stockData.shares}</div>
       </div>
       <div style={{ paddingTop: '30px' }}>Transaction history:</div>
       <div style={{ display: 'flex', width: '100%', padding: '10px 10px 0 10px' }}>
