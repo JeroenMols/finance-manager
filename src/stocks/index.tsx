@@ -7,9 +7,9 @@ import HoldingRepository from './repository';
 import { Holding } from './models';
 import { AccessToken } from '../account/models';
 import { stockColors, toColor } from '../utilities/colors';
-import { VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryStack } from 'victory';
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryStack } from 'victory';
 import { chartTheme } from '../utilities/chart-theme';
-import { chartThemeLight } from '../utilities/chart-theme-light';
+import { Stock, StockData, StockPrice } from './stock';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -245,7 +245,6 @@ const PortfolioHistory = (props: { stocks: StockData[] }) => {
     <>
       {historyData.length > 0 ? (
         <VictoryChart
-          domainPadding={20}
           theme={chartTheme}
           height={200}
           width={600}
@@ -259,92 +258,5 @@ const PortfolioHistory = (props: { stocks: StockData[] }) => {
         'loading history'
       )}
     </>
-  );
-};
-
-type StockData = {
-  name: string;
-  ticker: string;
-  price: number;
-  shares: number;
-  totalValue: number;
-};
-
-interface StockProps {
-  ticker: string;
-  stockData: StockData;
-  color: string;
-}
-
-const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
-  const [showHistory, setShowHistory] = useState(false);
-
-  return (
-    <div
-      style={{
-        display: 'flex',
-        color: '#FFF',
-        padding: '10px',
-        gap: '10px',
-        borderRadius: '10px',
-        fontWeight: 'bold',
-        backgroundColor: color,
-        flexDirection: 'column',
-      }}
-      onClick={() => setShowHistory(!showHistory)}
-    >
-      <div style={{ display: 'flex' }}>
-        <div style={{ width: '50%' }}>{stockData.name}</div>
-        <div style={{ width: '12%' }}>{stockData.ticker}</div>
-        <div style={{ width: '12%', textAlign: 'right' }}>{stockData.price.toFixed(2)}</div>
-        <div style={{ width: '10%', textAlign: 'right' }}>{stockData.shares}</div>
-        <div style={{ width: '14%', textAlign: 'right' }}>{stockData.totalValue.toFixed(2)}</div>
-      </div>
-      {showHistory ? <StockDetails ticker={ticker} /> : <></>}
-    </div>
-  );
-};
-
-type StockPrice = {
-  date: string;
-  price: number;
-  totalValue: number;
-};
-
-interface StockHistoryProps {
-  ticker: string;
-}
-
-const StockDetails: React.FC<StockHistoryProps> = ({ ticker }) => {
-  const [history, setHistory] = useState<StockPrice[]>([]);
-  useEffect(() => {
-    loadHistory(ticker).then((history) => setHistory(history));
-  }, [ticker]);
-
-  const loadHistory = async (ticker: string): Promise<StockPrice[]> => {
-    const response = await fetch(BASE_URL + 'stocks/history/' + ticker + '/' + '1');
-    return (await response.json()) as StockPrice[];
-  };
-
-  const tickValues = history.map((item) => item.date);
-  const tickFormat = tickValues.map((date) => new Date(Date.parse(date)).toLocaleString('default', { month: 'short' }));
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', margin: '0px 50px' }}>
-      {history.length === 0 ? (
-        <div>Loading...</div>
-      ) : (
-        <VictoryChart
-          theme={chartThemeLight}
-          height={200}
-          width={600}
-          padding={{ top: 20, right: 30, bottom: 30, left: 50 }}
-        >
-          <VictoryAxis tickValues={tickValues} tickFormat={tickFormat} />
-          <VictoryAxis dependentAxis tickFormat={(x) => `$${x}`} />
-          <VictoryLine data={history} x="date" y="price" />
-        </VictoryChart>
-      )}
-    </div>
   );
 };
