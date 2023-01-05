@@ -4,7 +4,7 @@ import { PieChart } from 'react-minimal-pie-chart';
 import { log } from '../utilities/log';
 import { BASE_URL } from '../config';
 import HoldingRepository from './repository';
-import { Holding, Portfolio } from './models';
+import { Holding, Portfolio, Stock } from './models';
 import { AccessToken } from '../account/models';
 import { stockColors, toColor } from '../utilities/colors';
 import { VictoryArea, VictoryAxis, VictoryChart, VictoryStack } from 'victory';
@@ -177,8 +177,7 @@ const PortfolioView: React.FC<PortfolioViewProps> = ({ portfolio }) => {
         <div style={{ width: '80%' }}>Total portfolio value</div>
         <div style={{ width: '20%', textAlign: 'right' }}>{portfolio.value}</div>
       </div>
-      {/* TODO fix this */}
-      {/* {stockElements.length > 0 ? <PortfolioHistory stocks={stockData} /> : <></>} */}
+      {stockElements.length > 0 ? <PortfolioGraph stocks={portfolio.stocks} /> : <></>}
     </div>
   );
 };
@@ -188,20 +187,25 @@ type HistoryItem = {
   prices: StockPrice[];
 };
 
-const PortfolioHistory = (props: { stocks: StockData[] }) => {
+interface PortfolioGraphProps {
+  stocks: Stock[];
+}
+
+// TODO: should this be a more general component? i.e. some graph
+const PortfolioGraph: React.FC<PortfolioGraphProps> = ({ stocks }) => {
   const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
     const newStocksPromises: Promise<HistoryItem>[] = [];
-    for (let i = 0; i < props.stocks.length; i++) {
-      log('loading history: ' + props.stocks[i].ticker);
-      newStocksPromises.push(loadHistory(props.stocks[i]));
+    for (let i = 0; i < stocks.length; i++) {
+      log('loading history: ' + stocks[i].ticker);
+      newStocksPromises.push(loadHistory(stocks[i]));
     }
     Promise.all(newStocksPromises).then((historyData) => {
       log(newStocksPromises);
       setHistoryData(historyData);
     });
-  }, [props]);
+  }, [stocks]);
 
   let tickValues: string[] = [];
   let tickFormat: string[] = [];
