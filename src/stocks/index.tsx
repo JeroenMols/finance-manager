@@ -4,12 +4,12 @@ import { PieChart } from 'react-minimal-pie-chart';
 import { log } from '../utilities/log';
 import { BASE_URL } from '../config';
 import HoldingRepository from './repository';
-import { Holding } from './models';
+import { Holding, Portfolio } from './models';
 import { AccessToken } from '../account/models';
 import { stockColors, toColor } from '../utilities/colors';
 import { VictoryArea, VictoryAxis, VictoryChart, VictoryStack } from 'victory';
 import { chartTheme } from '../utilities/chart-theme';
-import { Stock, StockData, StockPrice } from './stock';
+import { StockItem, StockData, StockPrice } from './stock';
 
 function csvToHoldings(csv: string): Holding[] {
   const allValues = csv.split(',');
@@ -40,7 +40,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
   const [ticker, setTicker] = useState('');
   const [shares, setShares] = useState('');
   const [toImport, setToImport] = useState('');
-  const [holdings, setHoldings] = useState<Holding[]>([]);
+  const [portfolio, setPortfolio] = useState<Portfolio | undefined>(undefined);
 
   // TODO avoid reinstantiating
   const repo = new HoldingRepository(props.accessToken);
@@ -49,7 +49,8 @@ const Stocks = (props: { accessToken: AccessToken }) => {
     event.preventDefault();
     repo.add({ ticker: ticker, quantity: parseInt(shares) }).then((holdings) => {
       if (holdings !== undefined) {
-        setHoldings(holdings as Holding[]);
+        // TODO: add should return updated portfolio
+        // setHoldings(holdings as Holding[]);
         setTicker('');
         setShares('');
       } else {
@@ -62,21 +63,23 @@ const Stocks = (props: { accessToken: AccessToken }) => {
     event.preventDefault();
     const imported = csvToHoldings(toImport);
     const uploaded = batchAddHoldings(repo, imported).then((holdings) => {
-      setHoldings(holdings);
+      // TODO fix this
+      // setHoldings(holdings);
       setToImport('');
     });
   };
 
   const exportHoldings = () => {
-    alert(holdingsToCsv(holdings));
+    // TODO fix this
+    // alert(holdingsToCsv(holdings));
   };
 
   useEffect(() => {
-    repo.get().then((holdings) => {
-      if (holdings !== undefined) {
-        setHoldings(holdings as Holding[]);
+    repo.get().then((portfolio) => {
+      if (portfolio !== undefined) {
+        setPortfolio(portfolio);
       } else {
-        alert('Unable to load your holdings');
+        alert('Unable to load your portfolio');
       }
     });
   }, [props.accessToken]);
@@ -110,7 +113,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
         />
         <input type="submit" value="Add holding" />
       </form>
-      <StockList holdings={holdings} />
+      {portfolio !== undefined ? <StockList portfolio={portfolio} /> : <></>}
       <br />
       <div style={{ display: 'flex', width: '800px', justifyContent: 'center', gap: '10px' }}>
         <form onSubmit={importHoldings}>
@@ -133,53 +136,25 @@ const Stocks = (props: { accessToken: AccessToken }) => {
 
 export default Stocks;
 
-const StockList = (props: { holdings: Holding[] }) => {
-  const [stockData, setStockData] = useState<StockData[]>([]);
-
-  useEffect(() => {
-    const newStocksPromises: Promise<StockData>[] = [];
-    for (let i = 0; i < props.holdings.length; i++) {
-      log('loading stock: ' + props.holdings[i].ticker);
-      newStocksPromises.push(loadHolding(props.holdings[i]));
-    }
-    Promise.all(newStocksPromises).then((stocks) => {
-      log(newStocksPromises);
-      setStockData(stocks);
-    });
-  }, [props]);
-
-  const loadHolding = async (holding: Holding) => {
-    const response = await fetch(BASE_URL + 'stocks/' + holding.ticker);
-    log('loaded stock: ' + holding.ticker);
-    return (await response.json()) as StockData;
-  };
-
+const StockList = (props: { portfolio: Portfolio }) => {
   const stockElements: JSX.Element[] = [];
-  stockData.forEach((stock, index) => {
-    stockElements.push(<Stock color={toColor(index)} ticker={stock.ticker} stockData={stock} />);
+  props.portfolio.stocks.forEach((stock, index) => {
+    stockElements.push(<StockItem color={toColor(index)} stock={stock} />);
   });
 
-  let totalPortfolioValue = 0;
-  for (let i = 0; i < stockData.length; i++) {
-    log('Adding ' + stockData[i].ticker + '   ' + stockData[i].price);
-    totalPortfolioValue += stockData[i].price;
-  }
-
   let chart = <div />;
-  if (stockData.length > 0) {
-    const chartData = stockData.map((data, index) => {
-      return {
-        title: data.name,
-        value: data.price,
-        color: toColor(index),
-      };
-    });
-    chart = (
-      <div style={{ width: '250px', height: '250px', padding: '20px', margin: '0px auto' }}>
-        <PieChart radius={49} data={chartData} animate={true} segmentsShift={1} />
-      </div>
-    );
-  }
+  const chartData = props.portfolio.stocks.map((data, index) => {
+    return {
+      title: data.name,
+      value: data.price,
+      color: toColor(index),
+    };
+  });
+  chart = (
+    <div style={{ width: '250px', height: '250px', padding: '20px', margin: '0px auto' }}>
+      <PieChart radius={49} data={chartData} animate={true} segmentsShift={1} />
+    </div>
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', width: '90%', maxWidth: '800px' }}>
@@ -196,9 +171,10 @@ const StockList = (props: { holdings: Holding[] }) => {
         }}
       >
         <div style={{ width: '80%' }}>Total portfolio value</div>
-        <div style={{ width: '20%', textAlign: 'right' }}>{totalPortfolioValue.toFixed(2)}</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>{props.portfolio.value}</div>
       </div>
-      {stockElements.length > 0 ? <PortfolioHistory stocks={stockData} /> : <></>}
+      {/* TODO fix this */}
+      {/* {stockElements.length > 0 ? <PortfolioHistory stocks={stockData} /> : <></>} */}
     </div>
   );
 };

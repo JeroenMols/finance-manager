@@ -1,7 +1,8 @@
 import { AccessToken } from '../account/models';
 import { BASE_URL } from '../config';
-import { Holding } from './models';
+import { Holding, Portfolio } from './models';
 
+// TODO think better about name here: should this be portfolio?
 class HoldingRepository {
   private accessToken;
 
@@ -9,8 +10,8 @@ class HoldingRepository {
     this.accessToken = { access_token: accessToken.access_token };
   }
 
-  public async get(): Promise<Holding[] | undefined> {
-    const result = await fetch(BASE_URL + 'holding/get', {
+  public async get(): Promise<Portfolio | undefined> {
+    const result = await fetch(BASE_URL + 'portfolio/get', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -20,8 +21,7 @@ class HoldingRepository {
     });
 
     if (result.ok) {
-      const holdings = (await result.json()) as Holding[];
-      return holdings;
+      return (await result.json()) as Portfolio;
     }
     return undefined;
   }

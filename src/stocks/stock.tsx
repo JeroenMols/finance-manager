@@ -4,14 +4,14 @@ import { BASE_URL } from '../config';
 import { chartThemeLight } from '../utilities/chart-theme-light';
 import { ReactComponent as ExpandSvg } from '../img/arrow-expand.svg';
 import { ReactComponent as CollapseSvg } from '../img/arrow-collapse.svg';
+import { Stock } from './models';
 
 interface StockProps {
-  ticker: string;
-  stockData: StockData;
+  stock: Stock;
   color: string;
 }
 
-export const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
+export const StockItem: React.FC<StockProps> = ({ stock, color }) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -29,25 +29,25 @@ export const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
       onClick={() => setShowDetails(!showDetails)}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ flexGrow: 1 }}>{stockData.name}</div>
-        <div style={{ textAlign: 'right' }}>11%</div>
-        <div style={{ width: '20%', textAlign: 'right', paddingRight: '10px' }}>{2}</div>
+        <div style={{ flexGrow: 1 }}>{stock.name}</div>
+        <div style={{ textAlign: 'right' }}>{stock.relativeValue * 100}%</div>
+        <div style={{ width: '20%', textAlign: 'right', paddingRight: '10px' }}>{stock.value}$</div>
         {showDetails ? <CollapseSvg fill="#fff" /> : <ExpandSvg fill="#fff" />}
       </div>
-      {showDetails ? <StockDetails stockData={stockData} /> : <></>}
+      {showDetails ? <StockDetails stock={stock} /> : <></>}
     </div>
   );
 };
 
 interface StockDetailsProps {
-  stockData: StockData;
+  stock: Stock;
 }
 
-const StockDetails: React.FC<StockDetailsProps> = ({ stockData }) => {
+const StockDetails: React.FC<StockDetailsProps> = ({ stock }) => {
   const [history, setHistory] = useState<StockPrice[]>([]);
   useEffect(() => {
-    loadHistory(stockData.ticker).then((history) => setHistory(history));
-  }, [stockData]);
+    loadHistory(stock.ticker).then((history) => setHistory(history));
+  }, [stock]);
 
   const loadHistory = async (ticker: string): Promise<StockPrice[]> => {
     const response = await fetch(BASE_URL + 'stocks/history/' + ticker + '/' + '1');
@@ -77,19 +77,19 @@ const StockDetails: React.FC<StockDetailsProps> = ({ stockData }) => {
       )}
       <div style={{ display: 'flex', width: '100%', paddingTop: '30px' }}>
         <div style={{ width: '25%' }}>Ticker</div>
-        <div style={{ width: '25%' }}>{stockData.ticker}</div>
+        <div style={{ width: '25%' }}>{stock.ticker}</div>
         <div style={{ width: '25%' }}>Average price</div>
-        <div style={{ width: '25%' }}>110 $</div>
+        <div style={{ width: '25%' }}>110$</div>
       </div>
       <div style={{ display: 'flex', width: '100%' }}>
         <div style={{ width: '25%' }}>Share price</div>
-        <div style={{ width: '25%' }}>{stockData.price}</div>
+        <div style={{ width: '25%' }}>{stock.price}$</div>
         <div style={{ width: '25%' }}>Buying cost</div>
-        <div style={{ width: '25%' }}>30 $</div>
+        <div style={{ width: '25%' }}>30$</div>
       </div>
       <div style={{ display: 'flex', width: '100%' }}>
         <div style={{ width: '25%' }}>Shares</div>
-        <div style={{ width: '25%' }}>2</div>
+        <div style={{ width: '25%' }}>{stock.quantity}</div>
       </div>
       <div style={{ paddingTop: '30px' }}>Transaction history:</div>
       <div style={{ display: 'flex', width: '100%', padding: '10px 10px 0 10px' }}>
