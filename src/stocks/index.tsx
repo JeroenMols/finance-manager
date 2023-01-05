@@ -28,10 +28,10 @@ function portfolioToCsv(portfolio: Portfolio) {
 }
 
 async function batchAddHoldings(repo: HoldingRepository, holdings: Holding[]) {
-  let result: Holding[] = [];
+  let result: Portfolio | undefined = undefined;
   for (const holding of holdings) {
     // TODO error handling
-    result = (await repo.add(holding)) as Holding[];
+    result = (await repo.add(holding)) as Portfolio;
   }
   return result;
 }
@@ -47,10 +47,9 @@ const PortfolioOverview = (props: { accessToken: AccessToken }) => {
 
   const addHolding = (event: React.FormEvent) => {
     event.preventDefault();
-    repo.add({ ticker: ticker, quantity: parseInt(shares) }).then((holdings) => {
-      if (holdings !== undefined) {
-        // TODO: add should return updated portfolio
-        // setHoldings(holdings as Holding[]);
+    repo.add({ ticker: ticker, quantity: parseInt(shares) }).then((portfolio) => {
+      if (portfolio !== undefined) {
+        setPortfolio(portfolio);
         setTicker('');
         setShares('');
       } else {
@@ -62,9 +61,8 @@ const PortfolioOverview = (props: { accessToken: AccessToken }) => {
   const importHoldings = (event: React.FormEvent) => {
     event.preventDefault();
     const imported = csvToHoldings(toImport);
-    const uploaded = batchAddHoldings(repo, imported).then((holdings) => {
-      // TODO fix this
-      // setHoldings(holdings);
+    const uploaded = batchAddHoldings(repo, imported).then((portfolio) => {
+      setPortfolio(portfolio);
       setToImport('');
     });
   };

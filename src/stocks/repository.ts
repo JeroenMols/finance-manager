@@ -26,8 +26,8 @@ class HoldingRepository {
     return undefined;
   }
 
-  public async add(holding: Holding): Promise<Holding[] | undefined> {
-    const result = await fetch(BASE_URL + 'holding/add', {
+  public async add(holding: Holding): Promise<Portfolio | undefined> {
+    const result = await fetch(BASE_URL + 'portfolio/add', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -37,8 +37,7 @@ class HoldingRepository {
     });
 
     if (result.ok) {
-      const holdings = (await result.json()) as Holding[];
-      return holdings;
+      return (await result.json()) as Portfolio;
     }
     return undefined;
   }
