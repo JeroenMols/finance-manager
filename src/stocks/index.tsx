@@ -23,8 +23,8 @@ function csvToHoldings(csv: string): Holding[] {
   return holdings;
 }
 
-function holdingsToCsv(holdings: Holding[]) {
-  return holdings.map((a) => a.ticker + ',' + a.quantity).reduce((a, b) => a + ',' + b);
+function portfolioToCsv(portfolio: Portfolio) {
+  return portfolio.stocks.map((a) => a.ticker + ',' + a.quantity).reduce((a, b) => a + ',' + b);
 }
 
 async function batchAddHoldings(repo: HoldingRepository, holdings: Holding[]) {
@@ -69,9 +69,12 @@ const Stocks = (props: { accessToken: AccessToken }) => {
     });
   };
 
-  const exportHoldings = () => {
-    // TODO fix this
-    // alert(holdingsToCsv(holdings));
+  const exportPortfolio = () => {
+    if (portfolio !== undefined) {
+      alert(portfolioToCsv(portfolio));
+    } else {
+      alert('Wait for portfolio to load before exporting.');
+    }
   };
 
   useEffect(() => {
@@ -128,7 +131,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
           <input type="submit" value="Import Stocks" />
         </form>
         <div> or </div>
-        <button onClick={exportHoldings}>Export stocks</button>
+        <button onClick={exportPortfolio}>Export stocks</button>
       </div>
     </div>
   );
