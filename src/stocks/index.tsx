@@ -36,7 +36,7 @@ async function batchAddHoldings(repo: HoldingRepository, holdings: Holding[]) {
   return result;
 }
 
-const Stocks = (props: { accessToken: AccessToken }) => {
+const PortfolioOverview = (props: { accessToken: AccessToken }) => {
   const [ticker, setTicker] = useState('');
   const [shares, setShares] = useState('');
   const [toImport, setToImport] = useState('');
@@ -137,7 +137,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
   );
 };
 
-export default Stocks;
+export default PortfolioOverview;
 
 interface PortfolioViewProps {
   portfolio: Portfolio;

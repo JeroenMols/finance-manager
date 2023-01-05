@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Account from './account';
 import { AccessToken } from './account/models';
-import Stocks from './stocks';
+import PortfolioOverview from './stocks';
 
 const App = () => {
   const [accessToken, setAccessToken] = useState<AccessToken>();
@@ -15,7 +15,7 @@ const App = () => {
           }}
         />
       ) : (
-        <Stocks accessToken={accessToken} />
+        <PortfolioOverview accessToken={accessToken} />
       )}
     </>
   );
