@@ -31,7 +31,7 @@ export const Stock: React.FC<StockProps> = ({ ticker, stockData, color }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ flexGrow: 1 }}>{stockData.name}</div>
         <div style={{ textAlign: 'right' }}>11%</div>
-        <div style={{ width: '20%', textAlign: 'right', paddingRight: '10px' }}>{stockData.totalValue.toFixed(2)}</div>
+        <div style={{ width: '20%', textAlign: 'right', paddingRight: '10px' }}>{2}</div>
         {showDetails ? <CollapseSvg fill="#fff" /> : <ExpandSvg fill="#fff" />}
       </div>
       {showDetails ? <StockDetails stockData={stockData} /> : <></>}
@@ -89,7 +89,7 @@ const StockDetails: React.FC<StockDetailsProps> = ({ stockData }) => {
       </div>
       <div style={{ display: 'flex', width: '100%' }}>
         <div style={{ width: '25%' }}>Shares</div>
-        <div style={{ width: '25%' }}>{stockData.shares}</div>
+        <div style={{ width: '25%' }}>2</div>
       </div>
       <div style={{ paddingTop: '30px' }}>Transaction history:</div>
       <div style={{ display: 'flex', width: '100%', padding: '10px 10px 0 10px' }}>
@@ -122,8 +122,6 @@ export type StockData = {
   name: string;
   ticker: string;
   price: number;
-  shares: number;
-  totalValue: number;
 };
 
 // TODO: this probably shouldn't be exported

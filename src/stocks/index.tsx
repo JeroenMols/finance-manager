@@ -149,7 +149,7 @@ const StockList = (props: { holdings: Holding[] }) => {
   }, [props]);
 
   const loadHolding = async (holding: Holding) => {
-    const response = await fetch(BASE_URL + 'stocks/' + holding.ticker + '/' + holding.shares);
+    const response = await fetch(BASE_URL + 'stocks/' + holding.ticker);
     log('loaded stock: ' + holding.ticker);
     return (await response.json()) as StockData;
   };
@@ -162,7 +162,7 @@ const StockList = (props: { holdings: Holding[] }) => {
   let totalPortfolioValue = 0;
   for (let i = 0; i < stockData.length; i++) {
     log('Adding ' + stockData[i].ticker + '   ' + stockData[i].price);
-    totalPortfolioValue += stockData[i].totalValue;
+    totalPortfolioValue += stockData[i].price;
   }
 
   let chart = <div />;
@@ -170,7 +170,7 @@ const StockList = (props: { holdings: Holding[] }) => {
     const chartData = stockData.map((data, index) => {
       return {
         title: data.name,
-        value: data.totalValue,
+        value: data.price,
         color: toColor(index),
       };
     });
@@ -237,7 +237,7 @@ const PortfolioHistory = (props: { stocks: StockData[] }) => {
   }
 
   const loadHistory = async (stock: StockData) => {
-    const response = await fetch(BASE_URL + 'stocks/history/' + stock.ticker + '/' + stock.shares);
+    const response = await fetch(BASE_URL + 'stocks/history/' + stock.ticker + '/' + 1);
     log('loaded history: ' + stock.ticker);
     return { ticker: stock.ticker, prices: (await response.json()) as StockPrice[] };
   };
