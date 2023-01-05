@@ -113,7 +113,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
         />
         <input type="submit" value="Add holding" />
       </form>
-      {portfolio !== undefined ? <StockList portfolio={portfolio} /> : <></>}
+      {portfolio !== undefined ? <PortfolioView portfolio={portfolio} /> : <></>}
       <br />
       <div style={{ display: 'flex', width: '800px', justifyContent: 'center', gap: '10px' }}>
         <form onSubmit={importHoldings}>
@@ -136,14 +136,18 @@ const Stocks = (props: { accessToken: AccessToken }) => {
 
 export default Stocks;
 
-const StockList = (props: { portfolio: Portfolio }) => {
+interface PortfolioViewProps {
+  portfolio: Portfolio;
+}
+
+const PortfolioView: React.FC<PortfolioViewProps> = ({ portfolio }) => {
   const stockElements: JSX.Element[] = [];
-  props.portfolio.stocks.forEach((stock, index) => {
+  portfolio.stocks.forEach((stock, index) => {
     stockElements.push(<StockItem color={toColor(index)} stock={stock} />);
   });
 
   let chart = <div />;
-  const chartData = props.portfolio.stocks.map((data, index) => {
+  const chartData = portfolio.stocks.map((data, index) => {
     return {
       title: data.name,
       value: data.price,
@@ -171,7 +175,7 @@ const StockList = (props: { portfolio: Portfolio }) => {
         }}
       >
         <div style={{ width: '80%' }}>Total portfolio value</div>
-        <div style={{ width: '20%', textAlign: 'right' }}>{props.portfolio.value}</div>
+        <div style={{ width: '20%', textAlign: 'right' }}>{portfolio.value}</div>
       </div>
       {/* TODO fix this */}
       {/* {stockElements.length > 0 ? <PortfolioHistory stocks={stockData} /> : <></>} */}
