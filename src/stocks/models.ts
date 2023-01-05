@@ -2,7 +2,7 @@ import { AccessToken } from '../account/models';
 
 export type Holding = {
   ticker: string;
-  shares: number;
+  quantity: number;
 };
 
 export type HoldingAddRequest = AccessToken & Holding;

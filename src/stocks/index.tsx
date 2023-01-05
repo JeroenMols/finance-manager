@@ -17,14 +17,14 @@ function csvToHoldings(csv: string): Holding[] {
   for (let i = 0; i < allValues.length; i = i + 2) {
     holdings.push({
       ticker: allValues[i].trim(),
-      shares: parseInt(allValues[i + 1]),
+      quantity: parseInt(allValues[i + 1]),
     });
   }
   return holdings;
 }
 
 function holdingsToCsv(holdings: Holding[]) {
-  return holdings.map((a) => a.ticker + ',' + a.shares).reduce((a, b) => a + ',' + b);
+  return holdings.map((a) => a.ticker + ',' + a.quantity).reduce((a, b) => a + ',' + b);
 }
 
 async function batchAddHoldings(repo: HoldingRepository, holdings: Holding[]) {
@@ -47,7 +47,7 @@ const Stocks = (props: { accessToken: AccessToken }) => {
 
   const addHolding = (event: React.FormEvent) => {
     event.preventDefault();
-    repo.add({ ticker: ticker, shares: parseInt(shares) }).then((holdings) => {
+    repo.add({ ticker: ticker, quantity: parseInt(shares) }).then((holdings) => {
       if (holdings !== undefined) {
         setHoldings(holdings as Holding[]);
         setTicker('');
